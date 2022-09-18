@@ -18,38 +18,50 @@ LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR P
 
 */
 #ifndef HARDWARE_CONFIG_H
-#define HARDWARE_CONFIG_H
-#include "hardware_variants.h"
+  #define HARDWARE_CONFIG_H
+  #include "hardware_variants.h"
 
-
+  #define ARDUINO_NRF52_COMMUNITY 1
 /* HARDWARE DEFINITION*/
 /* key matrix size */
-#define MATRIX_ROWS 5
-#define MATRIX_COLS 6
-#define MATRIX_ROW_PINS { 29, 2, 45, 3, 28 }
-#define MATRIX_COL_PINS { 24, 10, 9, 38, 13, 20 }
+  #define MATRIX_ROWS 5
+  #define MATRIX_COLS 6
+  // ROW0, ROW1, ROW2, ROW3, ROW4, #
+  #define MATRIX_ROW_PINS { 20, 13, 24, 9, 10 }
+  // COL5, COL4, COL0, COL2, COL1, COL3
+  #define MATRIX_COL_PINS { 45, 28, 3, 43, 2, 29 }
 
-#define UNUSED_PINS {}
+  #define UNUSED_PINS {}
 
-/* COL2ROW or ROW2COL */
-#define DIODE_DIRECTION COL2ROW
+  /* COL2ROW or ROW2COL */
+  #define DIODE_DIRECTION COL2ROW
+   
+  #define VCC_PIN 12
+  #define VCC_ENABLE_GPIO 1
+  #define STATUS_BLE_LED_PIN  19  //blue led
+  #define  BLE_LED_ACTIVE 1
+//  #define  BLE_LED_POLARITY 1
+  #define  STATUS_KB_LED_PIN 17  //red led
+  #define  STATUS_KB_LED_ACTIVE 1
+//  #define  STATUS_KB_LED_POLARITY 1
 
-	#define BACKLIGHT_PWM_ON 0
-	#define WS2812B_LED_PIN 6
-	
-	#define WS2812B_LED_COUNT 32
-	#define WS2812B_LED_ON 0 
-       #define BATTERY_TYPE BATT_LIPO
-        #define VBAT_PIN  1
-        #define VCC_PIN 12
-        #define VCC_POLARITY_ON 0
-        #define  STATUS_BLE_LED_PIN LED_BLUE  //blue = 0.15
-        #define  STATUS_KB_LED_PIN LED_RED  //no RED LED
+  #define ENCODER_A_PIN  26 
+  #define ENCODER_B_PIN  30
+  #define ENCODER_RESOLUTION 2  
+
+  #define BACKLIGHT_PWM_ON 0
+  #define WS2812B_LED_PIN 6
+
+  #define WS2812B_LED_COUNT 29
+  #define WS2812B_LED_ON 0
+   
+  #define BATTERY_TYPE BATT_LIPO
+  #define VBAT_PIN  31
 
           //  OLED DEFINITION
     // #define I2C_SDA_PIN 17
     // #define I2C_SCK_PIN 20
-    #define DISPLAY_U8G2_CONSTRUCTOR U8G2_SSD1306_128X32_UNIVISION_F_HW_I2C // see https://github.com/olikraus/u8g2/wiki/u8g2setupcpp for reference
+  #define DISPLAY_U8G2_CONSTRUCTOR U8G2_SSD1306_128X32_UNIVISION_F_HW_I2C // see https://github.com/olikraus/u8g2/wiki/u8g2setupcpp for reference
     
    /*     #define D3      6  
         #define D2      8   

@@ -22,6 +22,7 @@ boardParam=$1
 arduinoPath="/Applications/Arduino.app"
 arduinoDataPath=$(cd ~/Library/Arduino15 && pwd)
 nrf52PackagePath="$arduinoDataPath/packages/adafruit/hardware/nrf52"
+communityPackagePath="$arduinoDataPath/packages/community_nrf52/hardware/nrf52"
 
 scriptPath="$(dirname "$BASH_SOURCE")"
 
@@ -87,6 +88,7 @@ arduino_compile() {
 
    #Compile
    cmdCompile="$arduinoPath/Contents/Java/arduino-builder -compile -logger=machine -hardware $arduinoPath/Contents/Java/hardware -hardware $arduinoDataPath/packages -tools $arduinoPath/Contents/Java/tools-builder -tools $arduinoPath/Contents/Java/hardware/tools/avr -tools $arduinoDataPath/packages -built-in-libraries $arduinoPath/Contents/Java/libraries -fqbn=adafruit:nrf52:$fqbn:softdevice=$fqbnsd,debug=$fqbndb -ide-version=10805 -vid-pid=0000_0000 -build-path $buildPath -warnings=none -build-cache $buildCachePath -prefs=build.warn_data_percentage=75 -prefs=runtime.tools.arm-none-eabi-gcc.path=$arduinoDataPath/packages/adafruit/tools/arm-none-eabi-gcc/9-2019q4 -prefs=runtime.tools.arm-none-eabi-gcc-9-2019q4.path=$arduinoDataPath/packages/adafruit/tools/arm-none-eabi-gcc/9-2019q4 -prefs=runtime.tools.nrfjprog-9.4.0.path=$arduinoDataPath/packages/adafruit/tools/nrfjprog/9.4.0 -prefs=runtime.tools.nrfjprog.path=$arduinoDataPath/packages/adafruit/tools/nrfjprog/9.4.0 $sourcePath/firmware.ino"
+   # cmdCompile="$arduinoPath/Contents/Java/arduino-builder -compile -logger=machine -hardware $arduinoPath/Contents/Java/hardware -hardware $arduinoDataPath/packages -tools $arduinoPath/Contents/Java/tools-builder -tools $arduinoPath/Contents/Java/tools-builder -libraries $nrf52PackagePath/1ihgfodq  .3.8/libraries -libraries $communityPackagePath/0.1.21/libraries  -tools $arduinoPath/Contents/Java/hardware/tools/avr -built-in-libraries $arduinoPath/Contents/Java/libraries -fqbn=adafruit:nrf52:$fqbn:softdevice=$fqbnsd,debug=$fqbndb -ide-version=10805 -vid-pid=0000_0000 -build-path $buildPath -warnings=none -build-cache $buildCachePath -prefs=build.warn_data_percentage=75 -prefs=runtime.tools.arm-none-eabi-gcc.path=$arduinoDataPath/packages/adafruit/tools/arm-none-eabi-gcc/9-2019q4 -prefs=runtime.tools.arm-none-eabi-gcc-9-2019q4.path=$arduinoDataPath/packages/adafruit/tools/arm-none-eabi-gcc/9-2019q4 -prefs=runtime.tools.nrfjprog-9.4.0.path=$arduinoDataPath/packages/adafruit/tools/nrfjprog/9.4.0 -prefs=runtime.tools.nrfjprog.path=$arduinoDataPath/packages/adafruit/tools/nrfjprog/9.4.0 $sourcePath/firmware.ino"
 
    if $verbose; then 
       $cmdCompile

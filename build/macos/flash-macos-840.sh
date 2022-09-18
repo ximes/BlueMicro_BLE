@@ -1,15 +1,15 @@
 #!/bin/bash
 
 printf "This script must be run with a parameter indicating the serial port your controller is connected to\n"
-printf "./flash-macos-840.sh /dev/cu.usbmodem14101  \n"
+printf "./flash-macos-840.sh /dev/cu.usbmodem2101  \n"
 
 arduinoDataPath=$(cd ~/Library/Arduino15 && pwd)
 nrf52PackagePath="$arduinoDataPath/packages/adafruit/hardware/nrf52"
 scriptPath="$(dirname "$BASH_SOURCE")"
 blueMicroPath=$(cd $scriptPath/../.. && pwd)
 outputPath="${blueMicroPath}/output"
-buildPath="${outputPath}/lotus58"
-firmwarePath=$2
+buildPath="${outputPath}/.build"
+# firmwarePath=$2
 
 printf "\n"
 printf "Checking file locations\n"
@@ -55,4 +55,4 @@ fi
 ## adafruit-nrfutil --verbose dfu serial -pkg ../../output/$1 -b 115200 -p $2
 
 # $nrf52PackagePath/0.21.0/tools/adafruit-nrfutil/macos/adafruit-nrfutil --verbose dfu serial -pkg $buildPath/firmware.ino.zip  -b 115200 --singlebank -p $1
-/Applications/adafruit-nrfutil --verbose dfu serial -pkg $buildPath/$firmwarePath  -b 115200 --singlebank -p $1
+/Applications/adafruit-nrfutil --verbose dfu serial -pkg $buildPath/firmware.ino.zip  -b 115200 --singlebank -p $1
