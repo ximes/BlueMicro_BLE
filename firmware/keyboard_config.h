@@ -21,8 +21,6 @@ LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR P
 #define KEYBOARD_CONFIG_H
 #include "hardware_config.h"
 
-//#define KEYBOARD_SIDE SINGLE
-//#define KEYBOARD_SIDE LEFT
 #define KEYBOARD_SIDE RIGHT
 
 #define DEVICE_NAME_R "Orion's Split Right"
@@ -39,11 +37,11 @@ LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR P
       R24, R25, R26, R27, R28, R29 \
   ) \
   { \
-    { R00, R01, R02, R03, R04, R05 }, \
-    { R06, R07, R08, R09, R10, R11 }, \
-    { R12, R13, R14, R15, R16, R17 }, \
-    { R18, R19, R20, R21, R22, R23 }, \
-    { KC_NO, R25, R26, R27, R28, R29 }, \
+    { R05, R04, R03, R02, R01, R00 }, \
+    { R11, R10, R09, R08, R07, R06 }, \
+    { R17, R16, R15, R14, R13, R12 }, \
+    { R23, R22, R21, R20, R19, R18 }, \
+    { R29, R28, R27, R26, R25, R24 }, \
   }
 #else
 #define KEYMAP( \

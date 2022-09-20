@@ -118,11 +118,9 @@ LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR P
         KC_6,       KC_7,       KC_8,       KC_9,       KC_0,       KC_MINUS,
         KC_Y,       KC_U,       KC_I,       KC_O,       KC_P,       KC_LBRACKET, 
         KC_H,       KC_J,       KC_K,       KC_L,       KC_SCOLON,  KC_QUOTE,
-        KC_SPC,     KC_N,       KC_M,       KC_COMMA,   KC_DOT,     KC_SLSH,   
-        _______,    _______,    KC_SPC,     KC_ENT ,    KC_BSPACE,  KC_DEL
+        KC_N,       KC_M,       KC_COMMA,   KC_DOT,     KC_SLSH,    KC_LSHIFT,
+        _______,    KC_SPC,     KC_ENT ,    KC_BSPACE,  KC_DEL,     _______, 
     )};
-
-     
 
     void setupKeymap() {
 
