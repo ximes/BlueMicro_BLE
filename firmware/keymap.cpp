@@ -16,6 +16,7 @@ LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR P
 
 */
 #include "keymap.h"
+#include "RotaryEncoder.h"
 
 #if KEYBOARD_SIDE == SINGLE
     std::array<std::array<Key, MATRIX_COLS>, MATRIX_ROWS> matrix = {KEYMAP(
@@ -36,14 +37,38 @@ LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR P
 
 #if KEYBOARD_SIDE == LEFT
     std::array<std::array<Key, MATRIX_COLS>, MATRIX_ROWS> matrix = {KEYMAP(
-        KC_ESC,     KC_2,       KC_3,    KC_4,      KC_5,       KC_6, 
-        KC_TAB,     KC_Q,       KC_W,    KC_E,      KC_R,       KC_T,  
-        KC_LSHIFT,  KC_A,       KC_S,    KC_D,      KC_F,       KC_G,  
-        KC_LCTRL,   KC_Z,       KC_X,    KC_C,      KC_V,       KC_B,
-        KC_LALT,    KC_LGUI,    KC_5,    LAYER_0,  _______,    _______
+        KC_ESC,     KC_1,       KC_2,       KC_3,      KC_4,      KC_5,
+        KC_GRAVE,   KC_Q,       KC_W,       KC_E,      KC_R,       KC_T,
+        KC_TAB,     KC_A,       KC_S,       KC_D,      KC_F,       KC_G,
+        KC_LSHIFT,  KC_Z,       KC_X,       KC_C,      KC_V,       KC_B,
+        KC_LCTRL,   KC_LALT,    KC_LGUI,    _______,   KC_MEDIA_PLAY_PAUSE,    _______
     )};
  
-    void setupKeymap() { 
+     void encoder_callback(int step)
+    {
+      uint8_t layer = keyboardstate.layer;
+      if ( step > 0 )
+      {
+          switch(layer)
+          {
+              case _QUERTY: KeyScanner::add_to_encoderKeys(KC_AUDIO_VOL_DOWN); break;
+              case _LOWER: KeyScanner::add_to_encoderKeys(KC_RIGHT); break;
+              case _RAISE: KeyScanner::add_to_encoderKeys(LSFT(KC_RIGHT)); break;
+              default: ;
+          }
+      }else
+      {
+          switch(layer)
+          {
+              case _QUERTY: KeyScanner::add_to_encoderKeys(KC_AUDIO_VOL_UP); break;
+              case _LOWER: KeyScanner::add_to_encoderKeys(KC_LEFT);break;
+              case _RAISE: KeyScanner::add_to_encoderKeys(LSFT(KC_LEFT));break;
+              default: ;
+          }
+      }  
+    }
+
+    void setupKeymap() {
         uint32_t layer1[MATRIX_ROWS][MATRIX_COLS] = KEYMAP( \
             KC_GRAVE, KC_1,    KC_2,    KC_3,    KC_4,   KC_5,  \
             KC_GRAVE,KC_1,    KC_2,    KC_3,    KC_4,   KC_5,  \
@@ -82,19 +107,20 @@ LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR P
         }
 
         // if you want to add Tap/Hold or Tap/Doubletap activations, then you add them below.
-
+        RotaryEncoder.begin(ENCODER_A_PIN, ENCODER_B_PIN);    // Initialize Encoder
+        RotaryEncoder.setCallback(encoder_callback);    // Set callback
+        RotaryEncoder.start();    // Start encoder
     }
 #endif  // left
 
 #if KEYBOARD_SIDE == RIGHT
-    std::array<std::array<Key, MATRIX_COLS>, MATRIX_ROWS> matrix =
-        {KEYMAP(
-            KC_6,    KC_7,    KC_8,    KC_9,     KC_0,      KC_DEL,  \
-            KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,      KC_BSPACE, 
-            KC_H,    KC_J,    KC_K,    KC_L,    KC_SCOLON, KC_QUOTE,
-         KC_SPC,   KC_N,    KC_M,    KC_COMMA,KC_DOT,  KC_SLSH,   KC_ENT,
-            KC_SPC,  LAYER_2, LAYER_4, LAYER_3,_______
-        )};
+    std::array<std::array<Key, MATRIX_COLS>, MATRIX_ROWS> matrix = {KEYMAP(
+        KC_6,       KC_7,       KC_8,       KC_9,       KC_0,       KC_MINUS,
+        KC_Y,       KC_U,       KC_I,       KC_O,       KC_P,       KC_LBRACKET, 
+        KC_H,       KC_J,       KC_K,       KC_L,       KC_SCOLON,  KC_QUOTE,
+        KC_SPC,     KC_N,       KC_M,       KC_COMMA,   KC_DOT,     KC_SLSH,   
+        _______,    _______,    KC_SPC,     KC_ENT ,    KC_BSPACE,  KC_DEL
+    )};
 
      
 

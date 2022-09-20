@@ -24,17 +24,19 @@ LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR P
 #include "advanced_keycodes.h"
 #include "Key.h"
 #include <array>
+#include "KeyScanner.h"  // include at the top with the other includes
+extern DynamicState keyboardstate;
 
 #ifndef KEYMAP_H
 #define KEYMAP_H
 
-#define _L0  0
-#define _L1  1
-#define _L2  2
-#define _L3  3
-#define _L4  4
+#define _QUERTY  0
+#define _LOWER 1
+#define _RAISE  2
+#define _CONTROL  3
 
 void setupKeymap();
+void encoder_callback(int step); // add right after void setupKeymap();
 extern std::array<std::array<Key, MATRIX_COLS>, MATRIX_ROWS> matrix;
 
 #endif /* KEYMAP_H */
