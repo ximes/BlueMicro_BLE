@@ -119,8 +119,34 @@ LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR P
         KC_Y,       KC_U,       KC_I,       KC_O,       KC_P,       KC_LBRACKET, 
         KC_H,       KC_J,       KC_K,       KC_L,       KC_SCOLON,  KC_QUOTE,
         KC_N,       KC_M,       KC_COMMA,   KC_DOT,     KC_SLSH,    KC_LSHIFT,
-        _______,    KC_SPC,     KC_ENT ,    KC_BSPACE,  KC_DEL,     _______, 
+        _______,    KC_SPC,     KC_ENT ,    KC_BSPACE,  KC_DEL,     KB(KC_F15)
     )};
+
+   void encoder_callback(int step)
+    {
+      uint8_t layer = keyboardstate.layer;
+      if ( step > 0 )
+      {
+          switch(layer)
+          {
+              case _QUERTY: KeyScanner::add_to_encoderKeys(KB(KC_F15)); break;
+              case _LOWER: KeyScanner::add_to_encoderKeys(KC_RIGHT); break;
+              case _RAISE: KeyScanner::add_to_encoderKeys(LSFT(KC_RIGHT)); break;
+              default: ;
+          }
+      }else
+      {
+          switch(layer)
+          {
+              case _QUERTY: KeyScanner::add_to_encoderKeys(RGB_MODE_FORWARD); break;
+              case _LOWER: KeyScanner::add_to_encoderKeys(KC_LEFT);break;
+              case _RAISE: KeyScanner::add_to_encoderKeys(LSFT(KC_LEFT));break;
+              default: ;
+          }
+      }  
+      
+    }
+
 
     void setupKeymap() {
 
@@ -167,5 +193,8 @@ LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR P
             }
         }
 
+        RotaryEncoder.begin(ENCODER_A_PIN, ENCODER_B_PIN);    // Initialize Encoder
+        RotaryEncoder.setCallback(encoder_callback);    // Set callback
+        RotaryEncoder.start();    // Start encoder
     }
 #endif

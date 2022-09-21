@@ -415,6 +415,7 @@ enum hid_keyboard_keypad_usage {
 #define OUT_USB             KB(KC_R)
 #define OUT_BT              KB(KC_S) 
 
+#define RGB_BLUE_BREATHE    KB(KC_F15) 
 #define RGB_TOG             KB(KC_T) 
 #define RGB_MODE_FORWARD    KB(KC_U) 
 #define RGB_MOD             RGB_MODE_FORWARD
@@ -631,4 +632,3 @@ enum hid_keyboard_keypad_usage {
 #define EXPAND_ALT_CODE(CODE1, CODE2, CODE3, CODE4)  addKeycodeToQueue(CODE1,BIT_LALT); addKeycodeToQueue(CODE2,BIT_LALT); addKeycodeToQueue(CODE3,BIT_LALT); addKeycodeToQueue(CODE4,BIT_LALT);
 
 #endif /* HID_KEYCODES_H */
-

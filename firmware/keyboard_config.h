@@ -21,7 +21,7 @@ LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR P
 #define KEYBOARD_CONFIG_H
 #include "hardware_config.h"
 
-#define KEYBOARD_SIDE RIGHT
+#define KEYBOARD_SIDE LEFT
 
 #define DEVICE_NAME_R "Orion's Split Right"
 #define DEVICE_NAME_L  "Orion's Split Left"
