@@ -1,5 +1,5 @@
 /*
-Copyright 2018-2021 <Pierre Constantineau>
+Copyright 2018 <Pierre Constantineau>
 
 3-Clause BSD License
 
@@ -23,17 +23,36 @@ LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR P
 #include "keyboard_config.h"
 #include "advanced_keycodes.h"
 #include "Key.h"
+#include "KeyScanner.h"
 #include <array>
 
 #ifndef KEYMAP_H
 #define KEYMAP_H
+
+#define KC_CAP_D MOD(MOD_LSHIFT, KC_D)
 
 #define _L0  0
 #define _L1  1
 #define _L2  2
 #define _L3  3
 
-void setupKeymap();
-extern std::array<std::array<Key, MATRIX_COLS>, MATRIX_ROWS> matrix;
+#define _PRESS 0
+#define _MT_TAP 1
+#define _MT_HOLD 2
+#define _DT_TAP 3
+#define _DT_DOUBLETAP 4
 
+void setupKeymap();
+void encoder_callback(int step);
+#include "BlueMicro_display.h"
+
+#ifdef BLUEMICRO_CONFIGURED_DISPLAY
+extern BlueMicro_Display OLED;        // needed to assign the update display callback
+extern DISPLAY_U8G2_CONSTRUCTOR u8g2; // needed to call the display functions
+#endif
+
+void updateDisplay(PersistentState* cfg, DynamicState* stat);
+
+extern std::array<std::array<Key, MATRIX_COLS>, MATRIX_ROWS> matrix;
+extern DynamicState keyboardstate;
 #endif /* KEYMAP_H */

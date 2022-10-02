@@ -53,4 +53,4 @@ fi
 
 ## adafruit-nrfutil --verbose dfu serial -pkg ../../output/$1 -b 115200 -p $2
 
-$nrf52PackagePath/0.21.0/tools/adafruit-nrfutil/macos/adafruit-nrfutil --verbose dfu serial -pkg $buildPath/firmware.ino.zip  -b 115200 --singlebank -p $1
+$nrf52PackagePath/1.3.0/tools/adafruit-nrfutil/macos/adafruit-nrfutil --verbose dfu serial -pkg $buildPath/firmware.ino.zip  -b 115200 --singlebank -p $1
