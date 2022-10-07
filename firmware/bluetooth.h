@@ -51,16 +51,16 @@ LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR P
     } __attribute__((packed)) StatePayload;
 
     void updateBLEStatus(void);
-    void bt_setup(uint8_t BLEProfile);
-    void bt_startAdv(void);
-    void bt_disconnect(void);
-    bool bt_isConnected(void);
-    void bt_stopAdv(void);
-    ble_gap_addr_t bt_getMACAddr(void);
+    void bluetooth_setup(uint8_t BLEProfile);
+    void bluetooth_startAdv(void);
+    void bluetooth_disconnect(void);
+    bool bluetooth_isConnected(void);
+    void bluetooth_stopAdv(void);
+    ble_gap_addr_t bluetooth_getMACAddr(void);
     void set_keyboard_led(uint16_t conn_handle, uint8_t led_bitmap);
-    void bt_sendKeys(HIDKeyboard currentReport);
-    void bt_sendMediaKey(uint16_t keycode);
-    void bt_sendMouseKey(uint16_t keycode);
+    void bluetooth_sendKeys(HIDKeyboard currentReport);
+    void bluetooth_sendMediaKey(uint16_t keycode);
+    void bluetooth_sendMouseKey(uint16_t keycode);
     void rssi_changed_callback(uint16_t conn_hdl, int8_t rssi);
     void advertizing_slow_callback(void);
     void advertizing_stop_callback(void);

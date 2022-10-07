@@ -11,9 +11,9 @@ Redistribution and use in source and binary forms, with or without modification,
 
 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR 
-A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT 
-LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT 
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
@@ -30,35 +30,39 @@ LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR P
 #include "nrf52battery.h"
 #include "LedPwm.h"
 #include "LedRGB.h"
+#include "Wire.h"
 #include "nrf52gpio.h"
 #include "datastructures.h"
 #include "debug_cli.h"
 #include "usb.h"
 #include "BlueMicro_display.h"
+#include "trackball.h"
 #include "BlueMicro_tone.h"
 #include "combo_engine.h"
 
-
-    void setupConfig(void);
-    void loadConfig(void);
-    void saveConfig(void);
-    void resetConfig(void);
-    void setupMatrix(void);
-    void scanMatrix(void);
-    void sendKeyPresses(void);
-    void LowestPriorityloop(void);
-    void NormalPriorityloop(void);
-    void keyscantimer_callback(TimerHandle_t _handle);
-    void batterytimer_callback(TimerHandle_t _handle);
-    void RGBtimer_callback(TimerHandle_t _handle);
-    void addStringToQueue(const char* str);
-    void UpdateQueue(void);
-    void addKeycodeToQueue(const uint16_t keycode);
-    void addKeycodeToQueue(const uint16_t keycode, const uint8_t modifier);
-    void process_keyboard_function(uint16_t keycode);
-    #ifndef USER_MACRO_FUNCTION  
-    #define USER_MACRO_FUNCTION 1  
-    void process_user_macros(uint16_t macroid);
-    #endif
+void setupInternalSettings(void);
+void resetConfig(void);
+void saveConfig(void);
+void initKeyboard(void);
+void setupDisplay(void);
+void setupTrackball(void);
+void scanMatrix(void);
+void setupLeds(void);
+void sendKeyPresses(void);
+void setupSchedulers(void);
+void LowestPriorityloop(void);
+void NormalPriorityloop(void);
+void keyscantimer_callback(TimerHandle_t _handle);
+void batterytimer_callback(TimerHandle_t _handle);
+void RGBtimer_callback(TimerHandle_t _handle);
+void addStringToQueue(const char *str);
+void UpdateQueue(void);
+void addKeycodeToQueue(const uint16_t keycode);
+void addKeycodeToQueue(const uint16_t keycode, const uint8_t modifier);
+void process_keyboard_function(uint16_t keycode);
+#ifndef USER_MACRO_FUNCTION
+#define USER_MACRO_FUNCTION 1
+void process_user_macros(uint16_t macroid);
+#endif
 
 #endif /* FIRMWARE_H */

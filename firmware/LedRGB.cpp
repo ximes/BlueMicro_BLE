@@ -26,7 +26,7 @@ LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR P
 uint8_t RGBval = 150;
 uint8_t RGBcounter = 0;
 rgb_color colors[WS2812B_LED_COUNT];
-uint32_t rgb_mode = RGB_MODE_PLAIN;
+uint32_t rgb_mode = RGB_MODE_NIGHT;
 
 // Converts a color from HSV to RGB.
 // h is hue, as a number between 0 and 360.
@@ -97,8 +97,21 @@ switch (rgb_mode)
                 pixels.setPixelColor(i, 0, 0, 0);  
             }
             break;
+        case RGB_MODE_NIGHT:            // NIGHT
+            // cppcheck-suppress unsignedLessThanZero
+            for(uint16_t i=0; i<WS2812B_LED_COUNT; i++) { // For each pixel...
+                byte x = (time >> 2) - (i << 3);
+                pixels.setPixelColor(i, 0, 0, 10); 
+            }
+            break;
+        case RGB_MODE_HELP:            // HELP
+            // TODO: active key?
+            for(uint16_t i=0; i<WS2812B_LED_COUNT; i++) { // For each pixel...
+                byte x = (time >> 2) - (i << 3);
+                pixels.setPixelColor(i, 10, 0, 0); 
+            }
+            break;
         case RGB_MODE_PLAIN:           // RAINBOW
-             
             // cppcheck-suppress unsignedLessThanZero
             for(uint16_t i=0; i<WS2812B_LED_COUNT; i++) { // For each pixel...
                 byte x = (time >> 2) - (i << 3);

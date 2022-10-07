@@ -62,7 +62,6 @@ LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR P
         bool    enableDisplay;
 
         bool    enableSerial;
-        bool    enableAudio;
         bool    dummy1;
         bool    dummy2;
 

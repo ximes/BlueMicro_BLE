@@ -428,6 +428,10 @@ enum hid_keyboard_keypad_usage {
 #define RGB_VAD             KB(KC_2) 
 #define RGB_MODE_PLAIN      KB(KC_3) 
 #define RGB_M_P             RGB_MODE_PLAIN
+#define RGB_MODE_NIGHT      KB(KC_F17) 
+#define RGB_M_N             RGB_MODE_NIGHT
+#define RGB_MODE_HELP       KB(KC_F16) 
+#define RGB_M_H             RGB_MODE_HELP
 #define RGB_MODE_BREATHE    KB(KC_4) 
 #define RGB_M_B             RGB_MODE_BREATHE
 #define RGB_MODE_RAINBOW    KB(KC_5) 

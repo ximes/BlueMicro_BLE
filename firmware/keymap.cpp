@@ -1,5 +1,5 @@
 /*
-Copyright 2018-2021 <Pierre Constantineau>
+Copyright 2018 <Pierre Constantineau>
 
 3-Clause BSD License
 
@@ -15,8 +15,10 @@ LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR P
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
+
 #include "keymap.h"
 #include "RotaryEncoder.h"
+#include "pimoroniTrackball.h"
 
 // Initialize matrix with nothing...
 std::array<std::array<Key, MATRIX_COLS>, MATRIX_ROWS> matrix =
@@ -31,130 +33,163 @@ std::array<std::array<Key, MATRIX_COLS>, MATRIX_ROWS> matrix =
 void updateDisplay(PersistentState* cfg, DynamicState* stat)
 {
     #ifdef BLUEMICRO_CONFIGURED_DISPLAY
-    u8g2.setFontMode(1);    // Transparent
-    u8g2.setFontDirection(0);
-    battery(0, 28, stat->vbat_per);
-    printline(0,28, stat->peer_name_prph);
+        u8g2.setFont(u8g2_font_helvB12_tf); // choose a suitable font
+        u8g2.setFontMode(1);    // Transparent
+        u8g2.setFontDirection(0);
+        // printline(0, 28, stat->peer_name_prph);
+        printline(0, 28, "Hsadasdsa");
+        // battery(0, 28, stat->vbat_per);
+        u8g2.setFontDirection(1);
 
-    char buffer [50];
-    // u8g2.setFont(u8g2_font_helvB12_tf); // choose a suitable font
-    switch(stat->layer)
-    {
-        case _L0:     u8g2.drawStr(0,128,"L0"); break;
-        case _L1:      u8g2.drawStr(0,128,"L1");break;
-        case _L2:     u8g2.drawStr(0,128,"L2");break; 
-    }
+        char buffer [50];
+
+        if (stat->helpmode){
+            u8g2.setFont(u8g2_font_helvB12_tf);
+            printline(2, 128, "H");
+            u8g2.drawStr(0, 128, "H");
+            // u8g2.setFont(u8g2_font_9x15_t_symbols);
+            // printline(10, 120, "H");
+        }
+
+        u8g2.setFont(u8g2_font_helvB12_tf);	// choose a suitable font
+        char buffer2 [50];
+        switch(stat->layer)
+        {
+            case _QWERTY:    u8g2.drawStr(0, 128, "QWERTY"); break;
+            case _SYMBOLS:   u8g2.drawStr(0, 128, "Symbols");break;
+            case _CONTROL:   u8g2.drawStr(0, 128, "Settings");break; 
+        }
+    #endif
+}
+void startup() {
+    updateRGBmode(RGB_MODE_NIGHT);
+    trackball.setRed(50);
+    #ifdef BLUEMICRO_CONFIGURED_DISPLAY
+        OLED.setStatusDisplayCallback(updateDisplay);
     #endif
 }
 
-void setupKeymap() {
+void setupEncoder() {
+    // Code below makes sure that the encoder gets configured.
+    RotaryEncoder.begin(ENCODER_PAD_A, ENCODER_PAD_B);      // Initialize Encoder
+    RotaryEncoder.setCallback(encoder_callback);            // Set callback
+    RotaryEncoder.start();                                  // Start encoder
+}
 
-  #ifdef BLUEMICRO_CONFIGURED_DISPLAY
-    OLED.setStatusDisplayCallback(updateDisplay);
-    #endif
+#if KEYBOARD_SIDE == LEFT
+    void encoder_callback(int step){
+        if ( step > 0 ) {
+            KeyScanner::add_to_encoderKeys(KC_AUDIO_VOL_DOWN);
+        } else {
+            KeyScanner::add_to_encoderKeys(KC_AUDIO_VOL_UP);
+        }  
+    }
 
+    void setupKeymap() {
+        /* Qwerty LEFT
+        * ,-------------------------------------------------.
+        * | Esc  |   1  |   2  |   3  |   4    |     5      |
+        * |------+------+------+------+--------+------------|
+        * | Tab  |   Q  |   W  |   E  |   R    |     T      |
+        * |------+------+------+------+--------+------------|
+        * | Shift|   A  |   S  |   D  |   F    |     G      |
+        * |------+------+------+------+--------+------------|
+        * | Ctrl |   Z  |   X  |   C  |   V    |     B      |
+        * |------+------+------+------+--------+------------+
+        * |      |      | Alt  | GUI  |  Space  | UP   | Play/Pause |
+        * `-------------------------------------------------'
+        */
 
+        uint32_t qwerty_layer[MATRIX_ROWS][MATRIX_COLS] = KEYMAP(
+            KC_ESC,     KC_1,       KC_2,       KC_3,    KC_4,      KC_5,
+            KC_TAB,     KC_Q,       KC_W,       KC_E,    KC_R,      KC_T,
+            KC_LSHIFT,  KC_A,       KC_S,       KC_D,    KC_F,      KC_G,
+            KC_LCTRL,   KC_Z,       KC_X,       KC_C,    KC_V,      KC_B,
+            LAYER_1,    _______ ,   KC_LALT,    KC_LGUI, KC_BSPACE,   KC_MEDIA_PLAY_PAUSE
+        );
 
-   // no layers for single keymap
-   // this is a keymap that's used for testing that each key is responding properly to key presses
-   // flash this keymap to both left and right to test whether each half works properly.
-   // once tested, you can flash the left and right to their respective halves.
-   uint32_t layer0_single[MATRIX_ROWS][MATRIX_COLS] = KEYMAP(
-        KC_LCTL ,  KC_1,    KC_2,    KC_3,    KC_4,    KC_5,
-        PRINT_BLE,  KC_Q,    KC_W,    KC_E,    KC_R,    KC_T, 
-        KC_TAB,  KC_A,    KC_S,    KC_D,    KC_F,    KC_G,
-        KC_LSFT, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,
-        KC_1, KC_LGUI, KC_LALT, KC_DOWN, KC_UP, KC_SPC
-    );
+        uint32_t symbol_layer[MATRIX_ROWS][MATRIX_COLS] = KEYMAP( \
+              _______,   KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5, \
+              KC_GRV,    KC_1,    KC_2,    KC_3,    KC_4,    KC_5,  \
+              _______, KC_EXLM,   KC_AT, KC_HASH,  KC_DLR, KC_PERC, \
+              _______,  KC_EQL, KC_MINS, KC_PLUS, KC_LCBR, KC_RCBR,  \
+               _______, _______, _______, _______, _______,_______\
+        );
 
+        uint32_t control_layer[MATRIX_ROWS][MATRIX_COLS] = KEYMAP( \
+               _______, _______ , _______ , _______ , _______ , _______, \
+              _______,  _______,  _______,   _______,  _______, _______,\
+              _______, _______,  _______,  _______,  _______, _______,\
+              _______,_______, _______, _______, _______, _______,  \
+               _______, _______, _______, _______, _______,_______ \
+        );
 
-/* Qwerty LEFT
- * ,------------------------------------------------.
- * | Esc  |   Q  |   W  |   E  |   R  |   T  |   Y* | 
- * |------+------+------+------+------+-------------|
- * | Tab  |   A  |   S  |   D  |   F  |   G  |   H* |
- * |------+------+------+------+------+------|------|
- * | Shift|   Z  |   X  |   C  |   V  |   B  |Space |
- * |------+------+------+------+------+------+------'
- * | Ctrl | GUI  | Alt  | L(3) | L(1) |Space |
- * `-----------------------------------------'
- */
+        // for (int row = 0; row < MATRIX_ROWS; ++row) { 
+        //     for (int col = 0; col < MATRIX_COLS; ++col) {
+        //         matrix[row][col].addActivation(_QWERTY, Method::PRESS, qwerty_layer[row][col]);
+        //     }
+        // }
 
-uint32_t layer0_left[MATRIX_ROWS][MATRIX_COLS] =
-    KEYMAP(
-        KC_TAB,  KC_1,    KC_2,    KC_3,    KC_4,    KC_5,
-        PRINT_BLE,  KC_Q,    KC_W,    KC_E,    KC_R,    KC_T, 
-        KC_TAB,  KC_A,    KC_S,    KC_D,    KC_F,    KC_G,
-        KC_LSFT, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,
-        KC_LCTL, KC_LGUI, KC_LALT, KC_DOWN, KC_UP, KC_SPC
-    );
+        ADDLAYER(_QWERTY, Method::PRESS , qwerty_layer);
+        ADDLAYER(_SYMBOLS, Method::PRESS , symbol_layer);
+        ADDLAYER(_CONTROL, Method::PRESS , control_layer);
 
- /* Qwerty RIGHT
- * ,------------------------------------------------.
- * |   =  |   Y  |   U  |   I  |   O  |   P  | Bksp |
- * |------+------+------+------+------+-------------|
- * |   \  |   H  |   J  |   K  |   L  |   ;  |  '   |
- * |------+------+------+------+------+------|------|
- * | Space|   N  |   M  |   ,  |   .  |   /  |Enter |
- * `------+------+------+------+------+------+------|
- *        | Space| L(2) | Left | Down |  Up  |Right |
- *        `-----------------------------------------'
- */
+        setupEncoder();
+    }
+#endif
 
-uint32_t layer0_right[MATRIX_ROWS][MATRIX_COLS] =
-    KEYMAP(
-        KC_6,    KC_7,    KC_8,    KC_9,    KC_0, KC_DEL,
-        KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,      PRINT_BLE, 
-        KC_H,    KC_J,    KC_K,    KC_L,    KC_SCOLON, KC_QUOTE,
-        KC_N,    KC_M,    KC_COMMA,KC_DOT,  KC_SLSH,   KC_ENT,
-        KC_SPC,  KC_LEFT, KC_LEFT, KC_UP,   KC_DOWN,   KC_RIGHT
-    );
-
-
-    for (int row = 0; row < MATRIX_ROWS; ++row)
-    {
-        for (int col = 0; col < MATRIX_COLS; ++col)
-        {
-            #if KEYBOARD_SIDE == SINGLE
-                matrix[row][col].addActivation(_L0, Method::PRESS, layer0_single[row][col]);
-            #endif
-            #if KEYBOARD_SIDE == LEFT
-                matrix[row][col].addActivation(_L0, Method::PRESS, layer0_left[row][col]);
-            #endif
-            #if KEYBOARD_SIDE == RIGHT
-                matrix[row][col].addActivation(_L0, Method::PRESS, layer0_right[row][col]);
-            #endif
-            // if you want to add Tap/Hold or Tap/Doubletap activations, then you add them below.
-
+#if KEYBOARD_SIDE == RIGHT
+    void encoder_callback(int step){
+        if ( step < 0 ) {
+            KeyScanner::add_to_encoderKeys(KC_MS_WH_DOWN);
+        } else {
+            KeyScanner::add_to_encoderKeys(KC_MS_WH_UP);
         }
     }
 
+    void setupKeymap() {
+        /* Qwerty RIGHT
+        * ,-------------------------------------------------.
+        * |   6  |   7   |   8  |   9  |   0  | KC_MINUS    |
+        * |------+-------+------+------+------+-------------|
+        * |   Y  |   U   |   I  |   O  |   P  | Bksp        |
+        * |------+-------+------+------+------+-------------|
+        * |   H  |   J   |   K  |   L  |   ;  |  '          |
+        * |------+-------+------+------+------+-------------|
+        * |   N  |   M   |   ,  |   .  |   /  | Shift       |
+        * `------+-------+------+------+------+-------------|
+        * | Help | Space | DOWN | Bksp | Del  | Enter       |
+        * `-------------------------------------------------'
+        */
 
-   // no layers for master keymap
-   // this is a keymap that's used for testing that each key is responding properly to key presses
-   // flash this keymap to both left and right to test whether each half works properly.
-   // once tested, you can flash the left and right to their respective halves.
+        uint32_t qwerty_layer[MATRIX_ROWS][MATRIX_COLS] = KEYMAP(
+            KC_6,       KC_7,       KC_8,       KC_9,       KC_0,       KC_DEL,
+            KC_Y,       KC_U,       KC_I,       KC_O,       KC_P,       KC_LBRACKET, 
+            KC_H,       KC_J,       KC_K,       KC_L,       KC_SCOLON,  KC_QUOTE,
+            KC_N,       KC_M,       KC_COMMA,   KC_DOT,     KC_SLSH,    KC_RSHIFT,
+            HELP_MODE,   KC_SPC ,    KC_ENT,      _______,  KC_DEL,     HELP_MODE
+        );
 
-  // Code below makes sure that the encoder gets configured.  
-  RotaryEncoder.begin(ENCODER_PAD_A, ENCODER_PAD_B);    // Initialize Encoder
-  RotaryEncoder.setCallback(encoder_callback);    // Set callback
-  RotaryEncoder.start();    // Start encoder
-}
+        uint32_t symbol_layer[MATRIX_ROWS][MATRIX_COLS] = KEYMAP( \
+            _______, _______, KC_MS_UP, _______, _______,    KC_MS_WH_UP, \
+            _______, KC_MS_LEFT, KC_MS_DOWN, KC_MS_RIGHT, _______, KC_MS_WH_DOWN,\
+            KC_PGUP, _______,   KC_UP, _______,_______, _______,\
+            KC_PGDN,  KC_LEFT, KC_DOWN, KC_RGHT,  KC_DEL, _______, \
+            _______, _______, _______, _______, _______, _______\
+        );
 
-void encoder_callback(int step)
-{
-  if ( step > 0 )
-  {
-    KeyScanner::add_to_encoderKeys(KC_AUDIO_VOL_DOWN);
-  }else
-  {
-    KeyScanner::add_to_encoderKeys(KC_AUDIO_VOL_UP);
-  }  
-}
+        uint32_t control_layer[MATRIX_ROWS][MATRIX_COLS] = KEYMAP( \
+             _______,  _______  , _______,  _______ ,  _______ ,KC_SPC,\
+            KC_PGUP, _______,   KC_UP, _______,_______, KC_BSPC,\
+            KC_PGDN,  KC_LEFT, KC_DOWN, KC_RGHT,  KC_DEL, KC_BSPC, \
+            _______, _______, _______, _______,   _______, _______,\
+            _______, _______, _______, _______, LAYER_0, _______\
+        );
 
+        ADDLAYER(_QWERTY, Method::PRESS , qwerty_layer);
+        ADDLAYER(_SYMBOLS, Method::PRESS , symbol_layer);
+        ADDLAYER(_CONTROL, Method::PRESS , control_layer);
 
-
-
-
-
-
+        setupEncoder();
+    }
+#endif

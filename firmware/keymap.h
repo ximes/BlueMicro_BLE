@@ -25,16 +25,16 @@ LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR P
 #include "Key.h"
 #include "KeyScanner.h"
 #include <array>
+#include "LedRGB.h"
 
 #ifndef KEYMAP_H
 #define KEYMAP_H
 
 #define KC_CAP_D MOD(MOD_LSHIFT, KC_D)
 
-#define _L0  0
-#define _L1  1
-#define _L2  2
-#define _L3  3
+#define _QWERTY 0
+#define _SYMBOLS  1
+#define _CONTROL  2
 
 #define _PRESS 0
 #define _MT_TAP 1

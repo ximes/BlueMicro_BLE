@@ -21,21 +21,21 @@ LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR P
 #define KEYBOARD_CONFIG_H
 #include "hardware_config.h"
 
-
+//HAND PIN: 32+6
 #define KEYBOARD_SIDE LEFT
 // CHANGE THIS FOR THE KEYBOARD TO MATCH WHAT IS BEING FLASHED. OPTIONS: LEFT  RIGHT  SINGLE
 
-#define DEVICE_NAME_R                         "ErgoTravelBLE_R"                          /**< Name of device. Will be included in the advertising data. */
-#define DEVICE_NAME_L                        "ErgoTravelBLE_L"                          /**< Name of device. Will be included in the advertising data. */
-#define DEVICE_NAME_M                         "ErgoTravelBLE"                          /**< Name of device. Will be included in the advertising data. */
+#define DEVICE_NAME_R   "Orion's KB"  /**< Name of device. Will be included in the advertising data. */
+#define DEVICE_NAME_L   "Orion's KB"  /**< Name of device. Will be included in the advertising data. */
+#define DEVICE_NAME_M   "Orion's KB"    /**< Name of device. Will be included in the advertising data. */
 
-#define DEVICE_MODEL                        "ErgoTravelBLE_V1"                          /**< Name of device. Will be included in the advertising data. */
+#define DEVICE_MODEL    "Lotus58"   /**< Name of device. Will be included in the advertising data. */
 
-#define MANUFACTURER_NAME                   "JPConstantineau.com"                      /**< Manufacturer. Will be passed to Device Information Service. */
-
-
+#define MANUFACTURER_NAME   "Orion" /**< Manufacturer. Will be passed to Device Information Service. */
+#define BLUEMICRO_CONFIGURED_TRACKBALL 1
 
 #if KEYBOARD_SIDE == RIGHT
+
 #define KEYMAP( \
       k00, k01, k02, k03, k04, k05, \
       k06, k07, k08, k09, k10, k11, \
