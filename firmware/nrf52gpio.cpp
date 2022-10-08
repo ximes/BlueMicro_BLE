@@ -171,15 +171,13 @@ void setupGpio()
     NVIC_SystemReset();
   } // end of NFC switch code.
 
-  if (keyboardconfig.enableVCCSwitch)
-  {
-    switchVCC(keyboardconfig.polarityVCCSwitch); // turn on VCC when starting up if needed.
-  }
+#if VCC_ENABLE_GPIO == 1
+  switchVCC(keyboardconfig.polarityVCCSwitch); // turn on VCC when starting up if needed.
+#endif
 
-  if (keyboardconfig.enableChargerControl)
-  {
-    switchCharger(keyboardconfig.polarityChargerControl); // turn on Charger when starting up if needed.
-  }
+#if VCC_ENABLE_CHARGER == 1
+  switchCharger(keyboardconfig.polarityChargerControl); // turn on Charger when starting up if needed.
+#endif
 
   // inits all the columns as INPUT
   for (const auto &column : columns)

@@ -183,32 +183,8 @@ void initKeyboard()
 
   LOG_LV1("BLEMIC", "Starting %s", DEVICE_NAME);
 
-  if (keyboardconfig.enableVCCSwitch)
-  {
-    switchVCC(keyboardconfig.polarityVCCSwitch); // turn on VCC when starting up if needed.
-  }
-
-  if (keyboardconfig.enableChargerControl)
-  {
-    switchCharger(keyboardconfig.polarityChargerControl); // turn on Charger when starting up if needed.
-  }
-
   keyscantimer.begin(keyboardconfig.matrixscaninterval, keyscantimer_callback);
   // batterytimer.begin(keyboardconfig.batteryinterval, batterytimer_callback);
-
-  // inits all the columns as INPUT
-  for (const auto &column : columns)
-  {
-    LOG_LV2("BLEMIC", "Setting to INPUT Column: %i", column);
-    pinMode(column, INPUT);
-  }
-
-  // inits all the rows as INPUT_PULLUP
-  for (const auto &row : rows)
-  {
-    LOG_LV2("BLEMIC", "Setting to INPUT_PULLUP Row: %i", row);
-    pinMode(row, INPUT_PULLUP);
-  }
 
   stringbuffer.clear();
   reportbuffer.clear();
@@ -1325,12 +1301,8 @@ void keyscantimer_callback(TimerHandle_t _handle)
   //     }
   //   }
 
-#if MATRIX_SCAN == 1
-  scanMatrix();
-#endif
-#if SEND_KEYS == 1
-  sendKeyPresses();
-#endif
+scanMatrix();
+sendKeyPresses();
   keyboardstate.lastuseractiontime = max(KeyScanner::getLastPressed(), keyboardstate.lastuseractiontime); // use the latest time to check for sleep...
   unsigned long timesincelastkeypress = (keyboardstate.timestamp > keyboardstate.lastuseractiontime) ? keyboardstate.timestamp - keyboardstate.lastuseractiontime : 0;
 
