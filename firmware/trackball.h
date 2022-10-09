@@ -10,22 +10,25 @@
 #include "datastructures.h"
 
 // #ifdef BLUEMICRO_CONFIGURED_TRACKBALL
-    #include <bluefruit.h>
-    #include <Wire.h>
-    #include "bluetooth.h"
-    #include <pimoroniTrackball.h>  //From https://github.com/ncmreynolds/pimoroniTrackball
+#include <bluefruit.h>
+#include <Wire.h>
+#include "bluetooth.h"
+#include <pimoroniTrackball.h> //From https://github.com/ncmreynolds/pimoroniTrackball
 // #endif
 
 // void buttonA_Event (uint8_t btnStatus);
 // void buttonB_Event (uint8_t btnStatus);
-
-class Trackball {
-    public: Trackball(PersistentState* cfg, DynamicState* stat);
+extern void addKeycodeToQueue(const uint16_t keycode);
+extern void addKeycodeToQueue(const uint16_t keycode, const uint8_t modifier);
+extern void sendMouseMovement(uint16_t x, uint16_t y);
+class Trackball
+{
+public:
+    Trackball(PersistentState *cfg, DynamicState *stat);
 
     void begin(void);
     void update(void);
-        
-    private:
-        PersistentState* config;
-        DynamicState* status;
+private:
+    PersistentState *config;
+    DynamicState *status;
 };

@@ -209,7 +209,7 @@ ble_gap_addr_t bluetooth_getMACAddr(void)
 /**************************************************************************************************************************/
 //
 /**************************************************************************************************************************/
-void bluetooth_startAdv(void)
+void bluetooth_start(void)
 {
   // Advertising packet
   Bluefruit.Advertising.addFlags(BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE);
@@ -254,7 +254,7 @@ void bluetooth_startAdv(void)
   Bluefruit.Advertising.setStopCallback(advertizing_stop_callback);
 }
 
-void bluetooth_stopAdv()
+void bluetooth_stop()
 {
   Bluefruit.Advertising.stop();
 }
@@ -612,8 +612,11 @@ void bluetooth_sendKeys(HIDKeyboard currentReport)
   keycode[3] = currentReport.keycode[3]; // Buffer
   keycode[4] = currentReport.keycode[4]; // Buffer
   keycode[5] = currentReport.keycode[5]; // Buffer
-  blehid.keyboardReport(hid_conn_hdl, mods, keycode);
-  LOG_LV2("HID", "Sending blehid.keyboardReport ");
+  if (!keyboardstate.helpmode)
+  {
+    blehid.keyboardReport(hid_conn_hdl, mods, keycode);
+    LOG_LV2("HID", "Sending blehid.keyboardReport ");
+  }
 #endif
 #if BLE_PERIPHERAL == 1                       // PERIPHERAL IS THE SLAVE BOARD
   Linkdata.modifier = currentReport.modifier; // initialize the slave to master link data...
@@ -645,62 +648,65 @@ void bluetooth_sendMouseKey(uint16_t keycode)
   static uint8_t movestep = MOVE_STEP;
 
 #if BLE_HID == 1
-  switch (keycode)
+  if (!keyboardstate.helpmode)
   {
-  case KC_MS_OFF:
-    blehid.mouseButtonRelease(hid_conn_hdl);
-    break;
-  case KC_MS_UP:
-    blehid.mouseMove(hid_conn_hdl, 0, -movestep);
-    break;
-  case KC_MS_DOWN:
-    blehid.mouseMove(hid_conn_hdl, 0, movestep);
-    break;
-  case KC_MS_LEFT:
-    blehid.mouseMove(hid_conn_hdl, -movestep, 0);
-    break;
-  case KC_MS_RIGHT:
-    blehid.mouseMove(hid_conn_hdl, movestep, 0);
-    break;
+    switch (keycode)
+    {
+    case KC_MS_OFF:
+      blehid.mouseButtonRelease(hid_conn_hdl);
+      break;
+    case KC_MS_UP:
+      blehid.mouseMove(hid_conn_hdl, 0, -movestep);
+      break;
+    case KC_MS_DOWN:
+      blehid.mouseMove(hid_conn_hdl, 0, movestep);
+      break;
+    case KC_MS_LEFT:
+      blehid.mouseMove(hid_conn_hdl, -movestep, 0);
+      break;
+    case KC_MS_RIGHT:
+      blehid.mouseMove(hid_conn_hdl, movestep, 0);
+      break;
 
-  case KC_MS_ACCEL0:
-    movestep = MOVE_STEP / MOVE_STEP;
-    break;
-  case KC_MS_ACCEL1:
-    movestep = MOVE_STEP;
-    break;
-  case KC_MS_ACCEL2:
-    movestep = MOVE_STEP + MOVE_STEP;
-    break;
+    case KC_MS_ACCEL0:
+      movestep = MOVE_STEP / MOVE_STEP;
+      break;
+    case KC_MS_ACCEL1:
+      movestep = MOVE_STEP;
+      break;
+    case KC_MS_ACCEL2:
+      movestep = MOVE_STEP + MOVE_STEP;
+      break;
 
-  case KC_MS_BTN1:
-    blehid.mouseButtonPress(hid_conn_hdl, MOUSE_BUTTON_LEFT);
-    break;
-  case KC_MS_BTN2:
-    blehid.mouseButtonPress(hid_conn_hdl, MOUSE_BUTTON_RIGHT);
-    break;
-  case KC_MS_BTN3:
-    blehid.mouseButtonPress(hid_conn_hdl, MOUSE_BUTTON_MIDDLE);
-    break;
-  case KC_MS_BTN4:
-    blehid.mouseButtonPress(hid_conn_hdl, MOUSE_BUTTON_BACKWARD);
-    break;
-  case KC_MS_BTN5:
-    blehid.mouseButtonPress(hid_conn_hdl, MOUSE_BUTTON_FORWARD);
-    break;
+    case KC_MS_BTN1:
+      blehid.mouseButtonPress(hid_conn_hdl, MOUSE_BUTTON_LEFT);
+      break;
+    case KC_MS_BTN2:
+      blehid.mouseButtonPress(hid_conn_hdl, MOUSE_BUTTON_RIGHT);
+      break;
+    case KC_MS_BTN3:
+      blehid.mouseButtonPress(hid_conn_hdl, MOUSE_BUTTON_MIDDLE);
+      break;
+    case KC_MS_BTN4:
+      blehid.mouseButtonPress(hid_conn_hdl, MOUSE_BUTTON_BACKWARD);
+      break;
+    case KC_MS_BTN5:
+      blehid.mouseButtonPress(hid_conn_hdl, MOUSE_BUTTON_FORWARD);
+      break;
 
-  case KC_MS_WH_UP:
-    blehid.mouseScroll(hid_conn_hdl, -1);
-    break;
-  case KC_MS_WH_DOWN:
-    blehid.mouseScroll(hid_conn_hdl, 1);
-    break;
-  case KC_MS_WH_LEFT:
-    blehid.mousePan(hid_conn_hdl, -1);
-    break;
-  case KC_MS_WH_RIGHT:
-    blehid.mousePan(hid_conn_hdl, 1);
-    break;
+    case KC_MS_WH_UP:
+      blehid.mouseScroll(hid_conn_hdl, -1);
+      break;
+    case KC_MS_WH_DOWN:
+      blehid.mouseScroll(hid_conn_hdl, 1);
+      break;
+    case KC_MS_WH_LEFT:
+      blehid.mousePan(hid_conn_hdl, -1);
+      break;
+    case KC_MS_WH_RIGHT:
+      blehid.mousePan(hid_conn_hdl, 1);
+      break;
+    }
   }
 #endif
 #if BLE_PERIPHERAL == 1    // PERIPHERAL IS THE SLAVE BOARD
@@ -723,13 +729,47 @@ void bluetooth_sendMouseKey(uint16_t keycode)
   ;                  // Don't send keys to slaves
 #endif
 }
+
+void bluetooth_sendMouseMovement(uint16_t x, uint16_t y)
+{
+#if BLE_HID == 1
+  if (!keyboardstate.helpmode)
+  {
+    blehid.mouseMove(x, y);
+  }
+#endif
+#if BLE_PERIPHERAL == 1    // PERIPHERAL IS THE SLAVE BOARD
+                           // TODO: is this working?
+  Linkdata.keycode[0] = 0; // initialize the slave to master link data...
+  Linkdata.keycode[1] = 0;
+  Linkdata.keycode[2] = 0;
+  Linkdata.keycode[3] = 0;
+  Linkdata.keycode[4] = 0;
+  Linkdata.keycode[5] = 0;
+  Linkdata.modifier = 0;
+  Linkdata.layer = 0;
+  // Linkdata.command = 0;
+  // Linkdata.timesync = 0;
+  // Linkdata.specialkeycode = keycode;
+  Linkdata.batterylevel = batterymonitor.vbat_per;
+  LOG_LV1("KB-P2C", " KBLinkChar_Buffer.notify sendMouseMovement");
+  KBLinkChar_Buffer.notify(&Linkdata, sizeof(Linkdata));
+#endif
+#if BLE_CENTRAL == 1 // CENTRAL IS THE MASTER BOARD
+  ;                  // Don't send keys to slaves
+#endif
+}
+
 /**************************************************************************************************************************/
 void bluetooth_sendMediaKey(uint16_t keycode)
 {
 #if BLE_HID == 1
-  blehid.consumerKeyPress(hid_conn_hdl, hid_GetMediaUsageCode(keycode));
-  delay(HIDREPORTINGINTERVAL);
-  blehid.consumerKeyRelease(); // TODO: do I need this here???
+  if (!keyboardstate.helpmode)
+  {
+    blehid.consumerKeyPress(hid_conn_hdl, hid_GetMediaUsageCode(keycode));
+    delay(HIDREPORTINGINTERVAL);
+    blehid.consumerKeyRelease(); // TODO: do I need this here???
+  }
 #endif
 #if BLE_PERIPHERAL == 1    // PERIPHERAL IS THE SLAVE BOARD
   Linkdata.keycode[0] = 0; // initialize the slave to master link data...

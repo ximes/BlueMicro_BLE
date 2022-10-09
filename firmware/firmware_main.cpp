@@ -24,7 +24,7 @@ BlueMicro_Display OLED(&keyboardconfig, &keyboardstate); /// Typically a Blue LE
 #endif
 
 #ifdef BLUEMICRO_CONFIGURED_TRACKBALL
-// Trackball TRACKBALL(&keyboardconfig, &keyboardstate);  /// Typically a Blue LED and a Red LED
+Trackball TRACKBALL(&keyboardconfig, &keyboardstate); /// Typically a Blue LED and a Red LED
 #endif
 
 KeyScanner keys(&keyboardconfig, &keyboardstate);
@@ -139,11 +139,12 @@ void setupDisplay()
   }
 #endif
 }
+
 void setupTrackball()
 {
 // TODO: add a scheduler for this?
 #ifdef BLUEMICRO_CONFIGURED_TRACKBALL
-  // TRACKBALL.begin();
+  TRACKBALL.begin();
 #endif
 }
 
@@ -195,6 +196,7 @@ void setupLeds()
   if (keyboardconfig.enableRGBLED)
   {
     setupRGB(); // keyboardconfig.pinRGBLED
+    updateRGBmode(RGB_MODE_NIGHT);
   }
 
   statusLEDs.enable();
@@ -204,6 +206,7 @@ void setupLeds()
 void setupSchedulers()
 {
   Scheduler.startLoop(LowestPriorityloop, 1024, TASK_PRIO_LOWEST, "l1"); // this loop contains LED,RGB & PWM and Display updates.
+  Scheduler.startLoop(TrackballLoop, 1024, TASK_PRIO_NORMAL, "i2c");     // Trackball updates
   // Scheduler.startLoop(NormalPriorityloop, 1024, TASK_PRIO_NORMAL, "n1"); // this has nothing in it...
 }
 
@@ -215,18 +218,45 @@ void setup()
 {
   usb_setup(); // does nothing for 832 - see usb.cpp // must be first in setup due to USB setup timing.
   setupGpio(); // checks that NFC functions on GPIOs are disabled.
-  setupWDT();  // watchdog timer setup
+
+/**************************************************************************************************************************/
+/* TODO: this block should be in gpio*/
+#if VCC_ENABLE_GPIO == 1
+#if VCC_DEFAULT_ON == 1
+  switchVCC(true); // turn on VCC when starting up if needed.
+#endif
+#endif
+
+#if VCC_ENABLE_CHARGER == 1
+  switchCharger(true);
+#endif
+
+  // inits all the columns as INPUT
+  for (const auto &column : columns)
+  {
+    LOG_LV2("BLEMIC", "Setting to INPUT Column: %i", column);
+    pinMode(column, INPUT);
+  }
+
+  // inits all the rows as INPUT_PULLUP
+  for (const auto &row : rows)
+  {
+    LOG_LV2("BLEMIC", "Setting to INPUT_PULLUP Row: %i", row);
+    pinMode(row, INPUT_PULLUP);
+  }
+  /*to here. this block should be in gpio*/
+
+  setupWDT(); // watchdog timer setup
   setupInternalSettings();
   initKeyboard();
   setupDisplay();
   setupTrackball();
-
   bluetooth_setup(keyboardconfig.BLEProfile);
 
   // Set up keyboard matrix and start advertising
   setupKeymap(); // TODO: why was it done between setup and avdertising?
 
-  bluetooth_startAdv();
+  bluetooth_start();
   keyscantimer.start();
   // batterytimer.start();
 
@@ -415,6 +445,15 @@ void process_keyboard_function(uint16_t keycode)
     break;
   case HELP_MODE:
     keyboardstate.helpmode = !keyboardstate.helpmode;
+    if (keyboardstate.helpmode)
+    {
+      updateRGBmode(RGB_MODE_HELP);
+    }
+    else
+    {
+      updateRGBmode(RGB_MODE_NIGHT);
+    }
+
     break;
   case OUT_AUTO:
     keyboardconfig.connectionMode = CONNECTION_MODE_AUTO;
@@ -1252,10 +1291,23 @@ void sendKeyPresses()
 #endif /**************************************************/
 }
 
-byte multiHit = 2;       // May change to allow for various multi-hits
-uint8_t mouseSpeed = 10; // Change this to alter the mouse speed
-int16_t x = 0;
-int16_t y = 0;
+void sendMouseMovement(const uint16_t x, const uint16_t y)
+{
+  // TODO; should we use reports here somehow?
+  switch (keyboardstate.connectionState)
+  {
+  case CONNECTION_USB:
+    usb_sendMouseAbsoluteMove(x, y);
+    delay(keyboardconfig.keysendinterval * 2);
+    break;
+  case CONNECTION_BT:
+    bluetooth_sendMouseMovement(x, y);
+    delay(keyboardconfig.keysendinterval * 2);
+    break;
+  case CONNECTION_NONE: // save the report for when we reconnect
+    break;
+  }
+}
 
 // keyscantimer is being called instead
 /**************************************************************************************************************************/
@@ -1264,45 +1316,9 @@ void keyscantimer_callback(TimerHandle_t _handle)
   // timers have NORMAL priorities (HIGHEST>HIGH>NORMAL>LOW>LOWEST)
   // since timers are repeated non stop, we dont want the duration of code running within the timer to vary and potentially
   // go longer than the interval time.
+  scanMatrix();
+  sendKeyPresses();
 
-  //  // Trackball checking
-  //   if(trackball.changed()) {
-  //     // x = (trackball.right() - trackball.left()) * mouseSpeed;
-  //     // y = (trackball.down() - trackball.up()) * mouseSpeed;
-  //     if(trackball.down() > 0) {
-  //       bt_sendMouseKey(KC_MS_UP);
-  //       addKeycodeToQueue(KC_MS_UP);
-  //     }
-  //     if(trackball.up() > 0) {
-  //       bt_sendMouseKey(KC_MS_DOWN);
-  //       addKeycodeToQueue(KC_MS_DOWN);
-  //     }
-  //     if(trackball.right() > 0) {
-  //       bt_sendMouseKey(KC_MS_LEFT);
-  //       addKeycodeToQueue(KC_MS_LEFT);
-  //     }
-  //     if(trackball.left() > 0) {
-  //       bt_sendMouseKey(KC_MS_RIGHT);
-  //       addKeycodeToQueue(KC_MS_RIGHT);
-  //     }
-  //     if(trackball.click())
-  //     {
-  //       trackball.setBlue(70);
-  //       bt_sendMouseKey(KC_MS_BTN1);
-  //       addKeycodeToQueue(KC_MS_BTN1);
-  //       // blehid.mouseButtonPress(MOUSE_BUTTON_LEFT);
-  //     }
-  //     else if(trackball.release())
-  //     {
-  //       trackball.setBlue(0);
-  //       bt_sendMouseKey(KC_MS_OFF);
-  //       addKeycodeToQueue(KC_MS_OFF);
-  //       // blehid.mouseButtonRelease();
-  //     }
-  //   }
-
-scanMatrix();
-sendKeyPresses();
   keyboardstate.lastuseractiontime = max(KeyScanner::getLastPressed(), keyboardstate.lastuseractiontime); // use the latest time to check for sleep...
   unsigned long timesincelastkeypress = (keyboardstate.timestamp > keyboardstate.lastuseractiontime) ? keyboardstate.timestamp - keyboardstate.lastuseractiontime : 0;
 
@@ -1354,8 +1370,9 @@ sendKeyPresses();
 /**************************************************************************************************************************/
 // cppcheck-suppress unusedFunction
 void loop()
-{ // has task priority TASK_PRIO_LOW
-  updateWDT();
+{              // has task priority TASK_PRIO_LOW
+  updateWDT(); // Watchdog
+
   if (keyboardconfig.enableSerial)
   {
     handleSerial();
@@ -1370,7 +1387,7 @@ void loop()
       {
         if (bluetooth_isConnected())
           bluetooth_disconnect();
-        bluetooth_stopAdv();
+        bluetooth_stop();
         keyboardstate.connectionState = CONNECTION_USB;
         keyboardstate.lastuseractiontime = millis(); // a USB connection will reset sleep timer...
         // speaker.playTone(TONE_BLE_CONNECT);
@@ -1389,7 +1406,7 @@ void loop()
     {
       if (keyboardstate.connectionState != CONNECTION_NONE)
       {
-        bluetooth_startAdv();
+        bluetooth_start();
         keyboardstate.connectionState = CONNECTION_NONE;
         // speaker.playTone(TONE_BLE_DISCONNECT);
         //  disconnecting won't reset sleep timer.
@@ -1403,7 +1420,7 @@ void loop()
       {
         if (bluetooth_isConnected())
           bluetooth_disconnect();
-        bluetooth_stopAdv();
+        bluetooth_stop();
         keyboardstate.connectionState = CONNECTION_USB;
       }
     }
@@ -1421,7 +1438,7 @@ void loop()
     {
       if (keyboardstate.connectionState != CONNECTION_NONE)
       {
-        bluetooth_startAdv();
+        bluetooth_start();
         keyboardstate.connectionState = CONNECTION_NONE;
       }
     }
@@ -1473,8 +1490,6 @@ void LowestPriorityloop()
   // it's setup to do 1 thing every call.  This way, we won't take too much time from keyboard functions.
 
   backgroundTaskID toprocess = BACKGROUND_TASK_NONE;
-
-  // TRACKBALL.update();
 
   keyboardstate.lastuseractiontime = max(KeyScanner::getLastPressed(), keyboardstate.lastuseractiontime); // use the latest time to check for sleep...
   unsigned long timesincelastkeypress = keyboardstate.timestamp - KeyScanner::getLastPressed();
@@ -1562,6 +1577,13 @@ void LowestPriorityloop()
   delay(keyboardconfig.lowestpriorityloopinterval); // wait not too long
 }
 
+void TrackballLoop()
+{
+#ifdef BLUEMICRO_CONFIGURED_TRACKBALL
+  // TRACKBALL.update();
+  delay(keyboardconfig.lowestpriorityloopinterval); // wait not too long
+#endif
+}
 //********************************************************************************************//
 //* Idle Task - runs when there is nothing to do                                             *//
 //* Any impact of placing code here on current consumption?                                  *//

@@ -32,10 +32,8 @@ LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR P
 #define DEVICE_MODEL    "Lotus58"   /**< Name of device. Will be included in the advertising data. */
 
 #define MANUFACTURER_NAME   "Orion" /**< Manufacturer. Will be passed to Device Information Service. */
-#define BLUEMICRO_CONFIGURED_TRACKBALL 1
 
-#if KEYBOARD_SIDE == RIGHT
-
+#if KEYBOARD_SIDE == LEFT
 #define KEYMAP( \
       k00, k01, k02, k03, k04, k05, \
       k06, k07, k08, k09, k10, k11, \
@@ -51,6 +49,7 @@ LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR P
     { k29, k28, k27, k26, k25, k24 } \
 }
 #else
+#define BLUEMICRO_CONFIGURED_TRACKBALL 1
 #define KEYMAP( \
       k00, k01, k02, k03, k04, k05, \
       k06, k07, k08, k09, k10, k11, \

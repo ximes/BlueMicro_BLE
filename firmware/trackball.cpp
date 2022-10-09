@@ -14,13 +14,12 @@
 // byte multiHit = 2; // May change to allow for various multi-hits
 
 // Define trackball variables
-// uint8_t mouseSpeed = 10; //Change this to alter the mouse speed
-// int16_t x = 0;
-// int16_t y = 0;
+uint8_t mouseSpeed = 15; // Change this to alter the mouse speed
+int16_t x = 0;
+int16_t y = 0;
 
 // DailyStruggleButton buttonA;
 // DailyStruggleButton buttonB;
-
 
 // #endif
 
@@ -32,17 +31,17 @@
 //     case onPress:
 //       blehid.mouseButtonPress(MOUSE_BUTTON_RIGHT);
 //       break;
-      
+
 //     case onRelease:
 //       blehid.mouseButtonRelease();
 //       break;
-      
+
 //     case onLongPress:
-      
+
 //       break;
 
 //     case onMultiHit:
-      
+
 //       break;
 //   }
 // }
@@ -56,69 +55,75 @@
 //     case onPress:
 //       blehid.mouseButtonPress(MOUSE_BUTTON_MIDDLE);
 //       break;
-      
+
 //     case onRelease:
 //       blehid.mouseButtonRelease();
 //       break;
-      
+
 //     case onLongPress:
-      
+
 //       break;
 
 //     case onMultiHit:
-      
+
 //       break;
 //   }
 // }
 
-
-Trackball::Trackball(PersistentState* cfg, DynamicState* stat) {    // Constructor
-    config=cfg;
-    status=stat;
+Trackball::Trackball(PersistentState *cfg, DynamicState *stat)
+{ // Constructor
+  config = cfg;
+  status = stat;
 }
 
 void Trackball::begin(void)
 {
-  #ifdef BLUEMICRO_CONFIGURED_TRACKBALL
-    // Initialize I2C and trackball
-    Wire.begin();
-    trackball.begin();
+#ifdef BLUEMICRO_CONFIGURED_TRACKBALL
+  // Initialize I2C and trackball
+  Wire.begin();
+  trackball.begin();
 
-    while(!trackball.isConnected()) delay(100);
-// addKeycodeToQueue(KC_ENTER);
-    // buttonA.set(38, buttonA_Event, INT_PULL_UP);
-    // buttonB.set(43, buttonB_Event, INT_PULL_UP);
-  #endif
+  while (!trackball.isConnected())
+    ;
+#endif
 }
+
 /**************************************************************************************************************************/
 void Trackball::update(void)
 {
-    // #ifdef BLUEMICRO_CONFIGURED_TRACKBALL
-      // Poll buttons
-      // buttonA.poll();
-      // buttonB.poll();
-      
-      // Trackball checking
-      // if(trackball.changed()) {
-      //   x = (trackball.right() - trackball.left()) * mouseSpeed;
-      //   y = (trackball.down() - trackball.up()) * mouseSpeed;
-      //   if(x != 0 || y != 0) {
-      //     bt_sendMouseKey(KC_MS_UP);
-      //     addKeycodeToQueue(KC_ENTER);
-      //     // blehid.mouseMove(x, y);
-      //   }
-      //   if(trackball.click())
-      //   {
-      //     bt_sendMouseKey(KC_MS_BTN1);
-      //     addKeycodeToQueue(KC_ENTER);
-      //     // blehid.mouseButtonPress(MOUSE_BUTTON_LEFT);
-      //   }
-      //   else if(trackball.release())
-      //   {
-      //     bt_sendMouseKey(KC_MS_OFF);
-      //     addKeycodeToQueue(KC_ENTER);
-      //     // blehid.mouseButtonRelease();
-      //   }
-      // }
-    // #endif
+#ifdef BLUEMICRO_CONFIGURED_TRACKBALL
+  if (trackball.changed())
+  {
+
+    x = (trackball.right() - trackball.left()) * mouseSpeed;
+    y = (trackball.down() - trackball.up()) * mouseSpeed;
+    if (x != 0 || y != 0)
+    {
+      trackball.setBlue(50);
+      sendMouseMovement(-x, y);
+    }
+    else
+    {
+      trackball.setBlue(0);
+    }
+    // if (trackball.click())
+    // {
+    //   trackball.setBlue(70);
+    //   bluetooth_sendMouseKey(KC_MS_BTN1);
+    //   addKeycodeToQueue(KC_MS_BTN1);
+    //   delay(10);
+    //   bluetooth_sendMouseKey(KC_MS_OFF);
+    //   addKeycodeToQueue(KC_MS_OFF);
+    //   // blehid.mouseButtonPress(MOUSE_BUTTON_LEFT);
+    // }
+    // else if (trackball.release())
+    // {
+    //   trackball.setBlue(0);
+    //   bluetooth_sendMouseKey(KC_MS_OFF);
+    //   addKeycodeToQueue(KC_MS_OFF);
+    //   // blehid.mouseButtonRelease();
+    // }
+  }
+
+#endif
 }

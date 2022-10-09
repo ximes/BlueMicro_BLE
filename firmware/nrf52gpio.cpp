@@ -19,6 +19,7 @@ LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR P
 */
 #include "nrf52gpio.h"
 
+// Keyboard Matrix
 led_handler::led_handler(PersistentState *cfg, DynamicState *stat)
 {
   config = cfg;
@@ -150,7 +151,6 @@ void defaultLedCallback(PersistentState *config, DynamicState *status)
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
-
 void setupGpio()
 {
   // this code enables the NFC pins to be GPIO.
@@ -170,28 +170,6 @@ void setupGpio()
     delay(500);
     NVIC_SystemReset();
   } // end of NFC switch code.
-
-#if VCC_ENABLE_GPIO == 1
-  switchVCC(keyboardconfig.polarityVCCSwitch); // turn on VCC when starting up if needed.
-#endif
-
-#if VCC_ENABLE_CHARGER == 1
-  switchCharger(keyboardconfig.polarityChargerControl); // turn on Charger when starting up if needed.
-#endif
-
-  // inits all the columns as INPUT
-  for (const auto &column : columns)
-  {
-    LOG_LV2("BLEMIC", "Setting to INPUT Column: %i", column);
-    pinMode(column, INPUT);
-  }
-
-  // inits all the rows as INPUT_PULLUP
-  for (const auto &row : rows)
-  {
-    LOG_LV2("BLEMIC", "Setting to INPUT_PULLUP Row: %i", row);
-    pinMode(row, INPUT_PULLUP);
-  }
 }
 
 /**************************************************************************************************************************/

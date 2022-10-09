@@ -79,14 +79,20 @@ void usb_wakeup()
 void usb_sendKeys(HIDKeyboard currentReport)
 {
 #ifdef TINYUSB_AVAILABLE
-  USBhid.keyboardReport(RID_KEYBOARD, currentReport.modifier, currentReport.keycode);
+  if (!keyboardstate.helpmode)
+  {
+    USBhid.keyboardReport(RID_KEYBOARD, currentReport.modifier, currentReport.keycode);
+  }
 #endif
 }
 
 void usb_sendMediaKey(uint16_t keycode)
 {
 #ifdef TINYUSB_AVAILABLE
-  USBhid.sendReport16(RID_CONSUMER_CONTROL, hid_GetMediaUsageCode(keycode));
+  if (!keyboardstate.helpmode)
+  {
+    USBhid.sendReport16(RID_CONSUMER_CONTROL, hid_GetMediaUsageCode(keycode));
+  }
 #endif
 }
 
@@ -94,26 +100,29 @@ void usb_sendMediaKey(uint16_t keycode)
 void usb_sendMouseKey(uint16_t keycode)
 {
 #ifdef TINYUSB_AVAILABLE
-  switch (keycode)
+  if (!keyboardstate.helpmode)
   {
-  case KC_MS_OFF:
-    USBhid.mouseButtonRelease(RID_MOUSE);
-    break;
-  case KC_MS_BTN1:
-    USBhid.mouseButtonPress(RID_MOUSE, MOUSE_BUTTON_LEFT);
-    break;
-  case KC_MS_BTN2:
-    USBhid.mouseButtonPress(RID_MOUSE, MOUSE_BUTTON_RIGHT);
-    break;
-  case KC_MS_BTN3:
-    USBhid.mouseButtonPress(RID_MOUSE, MOUSE_BUTTON_MIDDLE);
-    break;
-  case KC_MS_BTN4:
-    USBhid.mouseButtonPress(RID_MOUSE, MOUSE_BUTTON_BACKWARD);
-    break;
-  case KC_MS_BTN5:
-    USBhid.mouseButtonPress(RID_MOUSE, MOUSE_BUTTON_FORWARD);
-    break;
+    switch (keycode)
+    {
+    case KC_MS_OFF:
+      USBhid.mouseButtonRelease(RID_MOUSE);
+      break;
+    case KC_MS_BTN1:
+      USBhid.mouseButtonPress(RID_MOUSE, MOUSE_BUTTON_LEFT);
+      break;
+    case KC_MS_BTN2:
+      USBhid.mouseButtonPress(RID_MOUSE, MOUSE_BUTTON_RIGHT);
+      break;
+    case KC_MS_BTN3:
+      USBhid.mouseButtonPress(RID_MOUSE, MOUSE_BUTTON_MIDDLE);
+      break;
+    case KC_MS_BTN4:
+      USBhid.mouseButtonPress(RID_MOUSE, MOUSE_BUTTON_BACKWARD);
+      break;
+    case KC_MS_BTN5:
+      USBhid.mouseButtonPress(RID_MOUSE, MOUSE_BUTTON_FORWARD);
+      break;
+    }
   }
 #endif
 }
@@ -121,33 +130,46 @@ void usb_sendMouseKey(uint16_t keycode)
 void usb_sendMouseMove(uint16_t keycode, uint16_t steps)
 {
 #ifdef TINYUSB_AVAILABLE
-  switch (keycode)
+  if (!keyboardstate.helpmode)
   {
-  case KC_MS_UP:
-    USBhid.mouseMove(RID_MOUSE, 0, -steps);
-    break;
-  case KC_MS_DOWN:
-    USBhid.mouseMove(RID_MOUSE, 0, steps);
-    break;
-  case KC_MS_LEFT:
-    USBhid.mouseMove(RID_MOUSE, -steps, 0);
-    break;
-  case KC_MS_RIGHT:
-    USBhid.mouseMove(RID_MOUSE, steps, 0);
-    break;
+    switch (keycode)
+    {
+    case KC_MS_UP:
+      USBhid.mouseMove(RID_MOUSE, 0, -steps);
+      break;
+    case KC_MS_DOWN:
+      USBhid.mouseMove(RID_MOUSE, 0, steps);
+      break;
+    case KC_MS_LEFT:
+      USBhid.mouseMove(RID_MOUSE, -steps, 0);
+      break;
+    case KC_MS_RIGHT:
+      USBhid.mouseMove(RID_MOUSE, steps, 0);
+      break;
 
-  case KC_MS_WH_UP:
-    USBhid.mouseScroll(RID_MOUSE, -1, 0);
-    break;
-  case KC_MS_WH_DOWN:
-    USBhid.mouseScroll(RID_MOUSE, 1, 0);
-    break;
-  case KC_MS_WH_LEFT:
-    USBhid.mouseScroll(RID_MOUSE, 0, -1);
-    break;
-  case KC_MS_WH_RIGHT:
-    USBhid.mouseScroll(RID_MOUSE, 0, 1);
-    break;
+    case KC_MS_WH_UP:
+      USBhid.mouseScroll(RID_MOUSE, -1, 0);
+      break;
+    case KC_MS_WH_DOWN:
+      USBhid.mouseScroll(RID_MOUSE, 1, 0);
+      break;
+    case KC_MS_WH_LEFT:
+      USBhid.mouseScroll(RID_MOUSE, 0, -1);
+      break;
+    case KC_MS_WH_RIGHT:
+      USBhid.mouseScroll(RID_MOUSE, 0, 1);
+      break;
+    }
+  }
+#endif
+}
+
+void usb_sendMouseAbsoluteMove(uint16_t x, uint16_t y)
+{
+#ifdef TINYUSB_AVAILABLE
+  if (!keyboardstate.helpmode)
+  {
+    USBhid.mouseMove(RID_MOUSE, x, y);
   }
 #endif
 }
