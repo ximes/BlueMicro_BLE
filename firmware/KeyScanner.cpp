@@ -31,6 +31,7 @@ KeyScanner::KeyScanner(PersistentState *cfg, DynamicState *stat)
 void KeyScanner::press(unsigned long currentMillis, const int &row, const int &col)
 {
     matrix[row][col].press(currentMillis);
+    lastPressedLedPosition = getLedPositionOnMatrix(row, col);
     lastPressed = currentMillis;
 }
 
@@ -55,7 +56,7 @@ void KeyScanner::updateRemoteLayer(uint16_t data)
 /**************************************************************************************************************************/
 void KeyScanner::updateRemoteHelpmode(bool data)
 {
-    helpmode = !data;
+    status->helpmode = data;
 }
 
 /**************************************************************************************************************************/
@@ -535,6 +536,11 @@ unsigned long KeyScanner::getLastPressed()
 {
     return lastPressed;
 }
+
+uint8_t KeyScanner::getLastPressedLedPosition()
+{
+    return lastPressedLedPosition;
+}
 /**************************************************************************************************************************/
 
 HIDKeyboard KeyScanner::currentReport = {0, {0, 0, 0, 0, 0, 0}, 0};
@@ -563,6 +569,7 @@ uint16_t KeyScanner::oneshotLayer = 0;
 uint8_t KeyScanner::remoteMod = 0;
 uint8_t KeyScanner::currentMod = 0;
 unsigned long KeyScanner::lastPressed = 0;
+uint8_t KeyScanner::lastPressedLedPosition = NULL;
 uint8_t KeyScanner::bufferposition = 0;
 std::vector<uint16_t> KeyScanner::activeKeys{};
 std::vector<uint16_t> KeyScanner::encoderKeys{};

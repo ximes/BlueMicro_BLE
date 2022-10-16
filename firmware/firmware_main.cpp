@@ -409,6 +409,21 @@ void addKeycodeToQueue(const uint16_t keycode, const uint8_t modifier)
     it = stringbuffer.insert(it, keyreport);
   }
 }
+
+void toggleHelpmode(bool helpmode, uint16_t last_pressed_keycode)
+{
+  if (keyboardstate.helpmode)
+  {
+    keyboardstate.last_pressed_keycode = KC_A; // static_cast<uint8_t>(KC_NO);
+    updateRGBmode(RGB_MODE_HELP);
+  }
+  else
+  {
+    keyboardstate.last_pressed_keycode = KC_NO; // static_cast<uint8_t>(KC_NO);
+    updateRGBmode(RGB_MODE_NIGHT);
+  }
+}
+
 /**************************************************************************************************************************/
 /**************************************************************************************************************************/
 void process_keyboard_function(uint16_t keycode)
@@ -445,18 +460,10 @@ void process_keyboard_function(uint16_t keycode)
     break;
   case HELP_MODE:
     keyboardstate.helpmode = !keyboardstate.helpmode;
-    if (keyboardstate.helpmode)
-    {
-      updateRGBmode(RGB_MODE_HELP);
-    }
-    else
-    {
-      updateRGBmode(RGB_MODE_NIGHT);
-    }
-
-// #if BLE_PERIPHERAL == 1
-//     sendhelpmodechange(keyboardstate.helpmode);
-// #endif
+    toggleHelpmode(keyboardstate.helpmode, KC_NO);
+#if BLE_PERIPHERAL == 1
+    send_helpmode_change(keyboardstate.helpmode, keyboardstate.last_pressed_keycode);
+#endif
 
     break;
   case OUT_AUTO:

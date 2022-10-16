@@ -11,9 +11,9 @@ Redistribution and use in source and binary forms, with or without modification,
 
 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR 
-A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT 
-LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT 
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
@@ -35,74 +35,74 @@ LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR P
 #include "combo_engine.h"
 #include "Key.h" //already included through keymap.h do we need it here?
 
-
-#ifndef USER_LAYER_FUNCTION  
-#define USER_LAYER_FUNCTION 1  
+#ifndef USER_LAYER_FUNCTION
+#define USER_LAYER_FUNCTION 1
 void process_user_layers(uint16_t layermask);
 #endif
 
-class KeyScanner {
-    public:
-        
-        KeyScanner(PersistentState* cfg, DynamicState* stat);
+class KeyScanner
+{
+public:
+    KeyScanner(PersistentState *cfg, DynamicState *stat);
 
-        static void press(unsigned long millis, const int& row, const int& col);
-        static void release(unsigned long millis, const int& row, const int& col);
-        static void updateRemoteReport(uint8_t data0 , uint8_t data1, uint8_t data2,uint8_t data3, uint8_t data4, uint8_t data5,uint8_t data6);
-        static void updateRemoteLayer(uint16_t data0);
-        static void updateRemoteHelpmode(bool data0);
-        static void process_for_tri_layers(uint8_t if_layer1, uint8_t and_layer2, uint8_t use_layer3);
-        static void add_to_encoderKeys(uint16_t keycode);
-        static bool getReport();
-        static unsigned long getLastPressed();
-        static bool layerChanged;
-        static bool reportChanged;
-        static uint16_t macro;
-        static uint16_t specialfunction;
-        static uint16_t consumer;
-        static uint16_t mouse;
-        static uint16_t localLayer;
-        static uint16_t special_key;
-        static uint16_t last_pressed_keycode;
-        static uint16_t remotespecialkeycode;
-        //static uint8_t currentReport[8];
-        static HIDKeyboard currentReport;
+    static void press(unsigned long millis, const int &row, const int &col);
+    static void release(unsigned long millis, const int &row, const int &col);
+    static void updateRemoteReport(uint8_t data0, uint8_t data1, uint8_t data2, uint8_t data3, uint8_t data4, uint8_t data5, uint8_t data6);
+    static void updateRemoteLayer(uint16_t data0);
+    static void updateRemoteHelpmode(bool data0);
+    static void process_for_tri_layers(uint8_t if_layer1, uint8_t and_layer2, uint8_t use_layer3);
+    static void add_to_encoderKeys(uint16_t keycode);
+    static bool getReport();
+    static unsigned long getLastPressed();
+    static uint8_t getLastPressedLedPosition();
+    static bool layerChanged;
+    static bool reportChanged;
+    static uint16_t macro;
+    static uint16_t specialfunction;
+    static uint16_t consumer;
+    static uint16_t mouse;
+    static uint16_t localLayer;
+    static uint16_t special_key;
+    static uint16_t last_pressed_keycode;
+    static uint16_t remotespecialkeycode;
+    // static uint8_t currentReport[8];
+    static HIDKeyboard currentReport;
 
-        static uint8_t bufferposition;
+    static uint8_t bufferposition;
 
-    private:
-        static void resetReport();
-        static void updateBuffer();
-        static bool updateLayer();
+private:
+    static void resetReport();
+    static void updateBuffer();
+    static bool updateLayer();
 
-        static void copyRemoteReport();
+    static void copyRemoteReport();
 
-       
-        static uint8_t getlayer(uint16_t layers);
-        static bool processingmacros;
-        static uint16_t oneshotLayer;
-        static uint8_t remoteReport[8];
-        //static HIDKeyboard remoteReport;
-        //static uint8_t previousReport[8];
-        static HIDKeyboard previousReport;
-        
-        static unsigned long lastPressed;
-        static uint16_t detectedlayerkeys;
-        static uint16_t remoteLayer;
-        static bool helpmode;
-        static uint32_t combotimer;
-        static uint32_t triggerkeytimer;
-        static uint8_t remoteMod;
-        static uint8_t currentMod;
+    static uint8_t getlayer(uint16_t layers);
+    static bool processingmacros;
+    static uint16_t oneshotLayer;
+    static uint8_t remoteReport[8];
+    // static HIDKeyboard remoteReport;
+    // static uint8_t previousReport[8];
+    static HIDKeyboard previousReport;
 
-        static std::vector<uint16_t> activeKeys; 
-        static std::vector<uint16_t> encoderKeys; 
-        static std::vector<uint16_t> macroBuffer; // not used
-        static std::vector<uint16_t> toggleBuffer; 
-        static std::vector<uint16_t> leaderBuffer; // not used
-        static std::vector<uint16_t> oneshotBuffer; 
+    static unsigned long lastPressed;
+    static uint8_t lastPressedLedPosition;
+    static uint16_t detectedlayerkeys;
+    static uint16_t remoteLayer;
+    static bool helpmode;
+    static uint32_t combotimer;
+    static uint32_t triggerkeytimer;
+    static uint8_t remoteMod;
+    static uint8_t currentMod;
 
-        static PersistentState* config;
-        static DynamicState* status;
+    static std::vector<uint16_t> activeKeys;
+    static std::vector<uint16_t> encoderKeys;
+    static std::vector<uint16_t> macroBuffer; // not used
+    static std::vector<uint16_t> toggleBuffer;
+    static std::vector<uint16_t> leaderBuffer; // not used
+    static std::vector<uint16_t> oneshotBuffer;
+
+    static PersistentState *config;
+    static DynamicState *status;
 };
 #endif /* KEYSCANNER_H */

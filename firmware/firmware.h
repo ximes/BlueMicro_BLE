@@ -57,6 +57,7 @@ void batterytimer_callback(TimerHandle_t _handle);
 void RGBtimer_callback(TimerHandle_t _handle);
 void addStringToQueue(const char *str);
 void UpdateQueue(void);
+void toggleHelpmode(bool helpmode, uint16_t last_pressed_keycode);
 void addKeycodeToQueue(const uint16_t keycode);
 void addKeycodeToQueue(const uint16_t keycode, const uint8_t modifier);
 void process_keyboard_function(uint16_t keycode);

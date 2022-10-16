@@ -232,7 +232,7 @@ void setupKeymap()
         HELP_MODE, KC_SPC, KC_ENT, _______, KC_DEL, HELP_MODE);
 
     uint32_t symbol_layer[MATRIX_ROWS][MATRIX_COLS] = KEYMAP(
-        _______, _______, KC_MS_UP, _______, _______, KC_MS_WH_UP,
+        DEBUG, _______, KC_MS_UP, _______, _______, KC_MS_WH_UP,
         _______, KC_MS_LEFT, KC_MS_DOWN, KC_MS_RIGHT, _______, KC_MS_WH_DOWN,
         KC_PGUP, _______, KC_UP, _______, _______, _______,
         KC_PGDN, KC_LEFT, KC_DOWN, KC_RGHT, KC_DEL, _______,

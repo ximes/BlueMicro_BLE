@@ -108,7 +108,6 @@ void updateRGB(unsigned long timesincelastkeypress)
         // cppcheck-suppress unsignedLessThanZero
         for (uint16_t i = 0; i < WS2812B_LED_COUNT; i++)
         { // For each pixel...
-            byte x = (time >> 2) - (i << 3);
             pixels.setPixelColor(i, 0, 0, 5);
         }
         break;
@@ -116,8 +115,11 @@ void updateRGB(unsigned long timesincelastkeypress)
         // TODO: active key?
         for (uint16_t i = 0; i < WS2812B_LED_COUNT; i++)
         { // For each pixel...
-            byte x = (time >> 2) - (i << 3);
-            pixels.setPixelColor(i, 5, 0, 0);
+            pixels.setPixelColor(i, 2, 0, 2);
+            if (i == KeyScanner::getLastPressedLedPosition())
+            {
+                pixels.setPixelColor(i, 50, 0, 0);
+            }
         }
         break;
     case RGB_MODE_PLAIN: // RAINBOW
@@ -202,4 +204,11 @@ void suspendRGB(void)
     }
     pixels.show(); // Send the updated pixel colors to the hardware.
 #endif
+}
+
+int getLedPositionOnMatrix(int row, int col)
+{
+    // TODO: generilize this
+    // leds on boards like lily/lotus are ordered sequentially. Therefore, column order should be inverted every other row.
+    return row % 2 == 0 ? (row + 1) * MATRIX_COLS - col - 1 : row * MATRIX_COLS + col;
 }

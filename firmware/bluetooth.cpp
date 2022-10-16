@@ -39,7 +39,7 @@ Payload Linkdata;
 BLEService KBLinkService = BLEService(UUID128_SVC_KEYBOARD_LINK); // Keyboard Link Service - Slave/Server Side
 BLECharacteristic KBLinkChar_Layers = BLECharacteristic(UUID128_CHR_KEYBOARD_LAYERS);
 BLECharacteristic KBLinkChar_Layer_Request = BLECharacteristic(UUID128_CHR_KEYBOARD_LAYER_REQUEST);
-// BLECharacteristic KBLinkChar_Helpmode = BLECharacteristic(UUID128_CHR_KEYBOARD_HELPMODE); // TODO
+BLECharacteristic KBLinkChar_Helpmode = BLECharacteristic(UUID128_CHR_KEYBOARD_HELPMODE); // TODO
 // BLECharacteristic KBLinkChar_Helpmode_Request = BLECharacteristic(UUID128_CHR_KEYBOARD_HELPMODE_REQUEST); // TODO
 BLECharacteristic KBLinkChar_Buffer = BLECharacteristic(UUID128_CHR_KEYBOARD_BUFFER);
 #endif
@@ -53,8 +53,7 @@ BLEHidAdafruit blehid; // HID Service
 BLEClientService KBLinkClientService = BLEClientService(UUID128_SVC_KEYBOARD_LINK); // Keyboard Link Service Client - Master/Client Side
 BLEClientCharacteristic KBLinkClientChar_Layers = BLEClientCharacteristic(UUID128_CHR_KEYBOARD_LAYERS);
 BLEClientCharacteristic KBLinkClientChar_Layer_Request = BLEClientCharacteristic(UUID128_CHR_KEYBOARD_LAYER_REQUEST);
-// BLEClientCharacteristic KBLinkClientChar_Helpmode = BLEClientCharacteristic(UUID128_CHR_KEYBOARD_HELPMODE); // TODO
-// BLEClientCharacteristic KBLinkClientChar_Helpmode_Request = BLEClientCharacteristic(UUID128_CHR_KEYBOARD_HELPMODE_REQUEST); // TODO
+BLEClientCharacteristic KBLinkClientChar_Helpmode = BLEClientCharacteristic(UUID128_CHR_KEYBOARD_HELPMODE);
 BLEClientCharacteristic KBLinkClientChar_Buffer = BLEClientCharacteristic(UUID128_CHR_KEYBOARD_BUFFER);
 #endif
 /**************************************************************************************************************************/
@@ -113,7 +112,8 @@ void bluetooth_setup(uint8_t BLEProfile)
 
   statedata.command = 0;
   statedata.layer = 0;
-  statedata.helpmode = false;
+  statedata.helpmode = false; // TODO
+  statedata.last_pressed_keycode = KC_NO;
   statedata.timesync = 0;
 
 #if BLE_PERIPHERAL == 1 // PERIPHERAL IS THE SLAVE BOARD
@@ -125,7 +125,8 @@ void bluetooth_setup(uint8_t BLEProfile)
   Linkdata.keycode[4] = 0;
   Linkdata.keycode[5] = 0;
   Linkdata.layer = 0;
-  Linkdata.helpmode = false; // TODO: needed?
+  Linkdata.helpmode = false;             // TODO: needed?
+  Linkdata.last_pressed_keycode = KC_NO; // TODO: needed?
   Linkdata.modifier = 0;
   // Linkdata.command = 0;
   // Linkdata.timesync = 0;
@@ -155,7 +156,7 @@ void bluetooth_setup(uint8_t BLEProfile)
   KBLinkChar_Layer_Request.begin();
   KBLinkChar_Layer_Request.write(&statedata, sizeof(statedata)); // initialize with empty buffer
 
-  // KBLinkChar_Helpmode.begin(); // TODO
+  KBLinkChar_Helpmode.begin(); // TODO
   // KBLinkChar_Helpmode_Request.begin(); // TODO
   KBLinkChar_Buffer.setProperties(CHR_PROPS_NOTIFY + CHR_PROPS_READ);
   KBLinkChar_Buffer.setPermission(SECMODE_OPEN, SECMODE_NO_ACCESS);
@@ -196,8 +197,8 @@ void bluetooth_setup(uint8_t BLEProfile)
   KBLinkClientChar_Buffer.setNotifyCallback(notify_callback);
   KBLinkClientChar_Layer_Request.begin();
 
-  // KBLinkClientChar_Helpmode.begin(); // TODO
-  // KBLinkClientChar_Helpmode.setNotifyCallback(notify_callback); // TODO
+  KBLinkClientChar_Helpmode.begin();                            // TODO
+  KBLinkClientChar_Helpmode.setNotifyCallback(notify_callback); // TODO
   // KBLinkClientChar_Helpmode_Request.begin(); // TODO
   Bluefruit.Scanner.setRxCallback(scan_callback);
   Bluefruit.Scanner.restartOnDisconnect(true);
@@ -237,7 +238,7 @@ void bluetooth_start(void)
   Bluefruit.Advertising.addUuid(UUID128_SVC_KEYBOARD_LINK);
   Bluefruit.Advertising.addUuid(UUID128_CHR_KEYBOARD_LAYERS);
   Bluefruit.Advertising.addUuid(UUID128_CHR_KEYBOARD_LAYER_REQUEST);
-  // Bluefruit.Advertising.addUuid(UUID128_CHR_KEYBOARD_HELPMODE); // TODO
+  Bluefruit.Advertising.addUuid(UUID128_CHR_KEYBOARD_HELPMODE); // TODO
   // Bluefruit.Advertising.addUuid(UUID128_CHR_KEYBOARD_HELPMODE_REQUEST); // TODO
   Bluefruit.Advertising.addUuid(UUID128_CHR_KEYBOARD_BUFFER);
   Bluefruit.Advertising.addService(KBLinkService); /// Advertizing Keyboard Link Service
@@ -345,11 +346,13 @@ void notify_callback(BLEClientCharacteristic *chr, uint8_t *data, uint16_t len)
 
     // if (chr->uuid == KBLinkClientChar_Helpmode.uuid)
     // {
+    //   // not reaching it
     //   LOG_LV1("CB NOT", "notify_callback: Helpmode Data");
     //   if (len >= sizeof(remotedata))
     //   {
     //     remotedata = *(Payload *)data;
-    //     KeyScanner::updateRemoteHelpmode(remotedata.helpmode);
+    //     // KeyScanner::updateRemoteHelpmode(true); // TODO
+    //     // keyboardstate.helpmode = false;
     //   }
     // }
 
@@ -361,7 +364,8 @@ void notify_callback(BLEClientCharacteristic *chr, uint8_t *data, uint16_t len)
         remotedata = *(Payload *)data;
         KeyScanner::updateRemoteReport(remotedata.modifier, remotedata.keycode[0], remotedata.keycode[1], remotedata.keycode[2], remotedata.keycode[3], remotedata.keycode[4], remotedata.keycode[5]);
         KeyScanner::updateRemoteLayer(remotedata.layer);
-        // KeyScanner::updateRemoteHelpmode(true); // TODO
+        KeyScanner::updateRemoteHelpmode(remotedata.helpmode); // TODO
+        toggleHelpmode(remotedata.helpmode, remotedata.last_pressed_keycode);
         KeyScanner::remotespecialkeycode = remotedata.specialkeycode;
         if (remotedata.modifier != 0 || remotedata.keycode[0] != 0)
           keyboardstate.lastuseractiontime = millis();
@@ -570,10 +574,10 @@ void cent_connect_callback(uint16_t conn_handle)
     {
       KBLinkClientChar_Layers.enableNotify();
     }
-    // if (KBLinkClientChar_Helpmode.discover()) // TODO
-    // { // TODO
-    //   KBLinkClientChar_Helpmode.enableNotify(); // TODO
-    // } // TODO
+    if (KBLinkClientChar_Helpmode.discover())   // TODO
+    {                                           // TODO
+      KBLinkClientChar_Helpmode.enableNotify(); // TODO
+    }                                           // TODO
     if (KBLinkClientChar_Buffer.discover())
     {
       KBLinkClientChar_Buffer.enableNotify();
@@ -668,61 +672,67 @@ void sendlayer(uint8_t layer)
 }
 
 /**************************************************************************************************************************/
-void sendhelpmodechange(bool helpmode)
+void send_helpmode_change(bool helpmode, uint16_t keycode)
 {
-  // #if BLE_PERIPHERAL == 1
-  //   LOG_LV1("CENTRAL", "Sending Helpmode change %i  %i", millis(), helpmode);
-  //   if (KBLinkChar_Helpmode_Request.discovered())
-  //   {
-  //     statedata.helpmode = helpmode;
-  //     uint16_t msg = KBLinkChar_Helpmode_Request.write_resp(&statedata, sizeof(statedata)); // Central->Peripheral uses the write mechanism
-  //     LOG_LV1("CENTRAL", "Sending Helpmode change %i", msg);
-  //   }
-  //   else
-  //   {
-  //     LOG_LV1("CENTRAL", "Sending Helpmode change failed KBLinkChar_Helpmode_Request.discover() not true ");
-  //   }
-  // #endif
+#if BLE_PERIPHERAL == 1
+  Linkdata.keycode[0] = 0; // initialize the slave to master link data...
+  Linkdata.keycode[1] = 0;
+  Linkdata.keycode[2] = 0;
+  Linkdata.keycode[3] = 0;
+  Linkdata.keycode[4] = 0;
+  Linkdata.keycode[5] = 0;
+  Linkdata.modifier = 0;
+  Linkdata.layer = 0;
+  Linkdata.helpmode = helpmode;            // TODO: make it dynamic
+  Linkdata.last_pressed_keycode = keycode; // TODO: make it dynamic
+  // Linkdata.command = 0;
+  // Linkdata.timesync = 0;
+  Linkdata.specialkeycode = HELP_MODE;
+  Linkdata.batterylevel = batterymonitor.vbat_per;
+  LOG_LV1("KB-P2C", " KBLinkChar_Buffer.notify sendMouseKey");
+  KBLinkChar_Helpmode.notify(&Linkdata, sizeof(Linkdata));
+#endif
 }
 
 /**************************************************************************************************************************/
 void bluetooth_sendKeys(HIDKeyboard currentReport)
 {
-
+  if (!keyboardstate.helpmode)
+  {
 #if BLE_HID == 1
-  uint8_t keycode[6];
-  uint8_t mods = 0;
-  mods = currentReport.modifier;         // modifiers
-  keycode[0] = currentReport.keycode[0]; // Buffer
-  keycode[1] = currentReport.keycode[1]; // Buffer
-  keycode[2] = currentReport.keycode[2]; // Buffer
-  keycode[3] = currentReport.keycode[3]; // Buffer
-  keycode[4] = currentReport.keycode[4]; // Buffer
-  keycode[5] = currentReport.keycode[5]; // Buffer
+    uint8_t keycode[6];
+    uint8_t mods = 0;
+    mods = currentReport.modifier;         // modifiers
+    keycode[0] = currentReport.keycode[0]; // Buffer
+    keycode[1] = currentReport.keycode[1]; // Buffer
+    keycode[2] = currentReport.keycode[2]; // Buffer
+    keycode[3] = currentReport.keycode[3]; // Buffer
+    keycode[4] = currentReport.keycode[4]; // Buffer
+    keycode[5] = currentReport.keycode[5]; // Buffer
 
-  blehid.keyboardReport(hid_conn_hdl, mods, keycode);
-  LOG_LV2("HID", "Sending blehid.keyboardReport ");
+    blehid.keyboardReport(hid_conn_hdl, mods, keycode);
+    LOG_LV2("HID", "Sending blehid.keyboardReport ");
 #endif
-#if BLE_PERIPHERAL == 1                       // PERIPHERAL IS THE SLAVE BOARD
-  Linkdata.modifier = currentReport.modifier; // initialize the slave to master link data...
-  Linkdata.keycode[0] = currentReport.keycode[0];
-  Linkdata.keycode[1] = currentReport.keycode[1];
-  Linkdata.keycode[2] = currentReport.keycode[2];
-  Linkdata.keycode[3] = currentReport.keycode[3];
-  Linkdata.keycode[4] = currentReport.keycode[4];
-  Linkdata.keycode[5] = currentReport.keycode[5];
-  Linkdata.layer = currentReport.layer;
-  // Linkdata.helpmode = true; // currentReport.helpmode; // TODO
-  // Linkdata.command = 0;
-  // Linkdata.timesync = 0;
-  Linkdata.specialkeycode = 0;
-  Linkdata.batterylevel = batterymonitor.vbat_per;
-  LOG_LV1("KB-P2C", " KBLinkChar_Buffer.notify sendKeys sending %i [1] %i", sizeof(Linkdata), Linkdata.keycode[0]);
-  KBLinkChar_Buffer.notify(&Linkdata, sizeof(Linkdata));
+#if BLE_PERIPHERAL == 1                         // PERIPHERAL IS THE SLAVE BOARD
+    Linkdata.modifier = currentReport.modifier; // initialize the slave to master link data...
+    Linkdata.keycode[0] = currentReport.keycode[0];
+    Linkdata.keycode[1] = currentReport.keycode[1];
+    Linkdata.keycode[2] = currentReport.keycode[2];
+    Linkdata.keycode[3] = currentReport.keycode[3];
+    Linkdata.keycode[4] = currentReport.keycode[4];
+    Linkdata.keycode[5] = currentReport.keycode[5];
+    Linkdata.layer = currentReport.layer;
+    // Linkdata.command = 0;
+    // Linkdata.timesync = 0;
+    Linkdata.specialkeycode = 0;
+    Linkdata.batterylevel = batterymonitor.vbat_per;
+    LOG_LV1("KB-P2C", " KBLinkChar_Buffer.notify sendKeys sending %i [1] %i", sizeof(Linkdata), Linkdata.keycode[0]);
+    KBLinkChar_Buffer.notify(&Linkdata, sizeof(Linkdata));
 #endif
 #if BLE_CENTRAL == 1 // CENTRAL IS THE MASTER BOARD
-  ;                  // Don't send keys to slaves
+    ;                // Don't send keys to slaves
 #endif
+  }
 }
 
 /**************************************************************************************************************************/
@@ -804,7 +814,6 @@ void bluetooth_sendMouseKey(uint16_t keycode)
   Linkdata.keycode[5] = 0;
   Linkdata.modifier = 0;
   Linkdata.layer = 0;
-  Linkdata.helpmode = false;
   // Linkdata.command = 0;
   // Linkdata.timesync = 0;
   Linkdata.specialkeycode = keycode;
