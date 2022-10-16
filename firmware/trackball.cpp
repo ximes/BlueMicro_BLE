@@ -94,35 +94,33 @@ void Trackball::update(void)
 #ifdef BLUEMICRO_CONFIGURED_TRACKBALL
   if (trackball.changed())
   {
+    trackball.setBlue(70);
+    if (trackball.left() > 2)
+    {
 
-    x = (trackball.right() - trackball.left()) * mouseSpeed;
-    y = (trackball.down() - trackball.up()) * mouseSpeed;
-    if (x != 0 || y != 0)
-    {
-      trackball.setBlue(50);
-      sendMouseMovement(-x, y);
+      triggerPress(KC_RIGHT);
     }
-    else
+    if (trackball.right() > 2)
     {
-      trackball.setBlue(0);
+      triggerPress(KC_LEFT);
     }
-    // if (trackball.click())
-    // {
-    //   trackball.setBlue(70);
-    //   bluetooth_sendMouseKey(KC_MS_BTN1);
-    //   addKeycodeToQueue(KC_MS_BTN1);
-    //   delay(10);
-    //   bluetooth_sendMouseKey(KC_MS_OFF);
-    //   addKeycodeToQueue(KC_MS_OFF);
-    //   // blehid.mouseButtonPress(MOUSE_BUTTON_LEFT);
-    // }
-    // else if (trackball.release())
-    // {
-    //   trackball.setBlue(0);
-    //   bluetooth_sendMouseKey(KC_MS_OFF);
-    //   addKeycodeToQueue(KC_MS_OFF);
-    //   // blehid.mouseButtonRelease();
-    // }
+    if (trackball.down() > 2)
+    {
+      triggerPress(KC_UP);
+    }
+    if (trackball.up() > 2)
+    {
+      triggerPress(KC_DOWN);
+    }
+  }
+
+private:
+  void Trackball::triggerPress(const uint16_t keycode)
+  {
+    trackball.setBlue(70);
+    addKeycodeToQueue(keycode);
+    delay(10);
+    trackball.setBlue(0);
   }
 
 #endif

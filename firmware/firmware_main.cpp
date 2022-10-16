@@ -163,6 +163,7 @@ void initKeyboard()
 
   keyboardstate.connectionState = CONNECTION_NONE;
   keyboardstate.needReset = false;
+  keyboardstate.last_pressed_keycode = KC_NO; // static_cast<uint8_t>(KC_NO);
   keyboardstate.needUnpair = false;
   keyboardstate.needFSReset = false;
   keyboardstate.save2flash = false;
@@ -203,8 +204,9 @@ void setupLeds()
 
 void setupSchedulers()
 {
-  Scheduler.startLoop(LowestPriorityloop, 1024, TASK_PRIO_LOWEST, "l1"); // this loop contains LED,RGB & PWM and Display updates.
-  Scheduler.startLoop(TrackballLoop, 1024, TASK_PRIO_NORMAL, "i2c");     // Trackball updates
+  Scheduler.startLoop(TrackballLoop, 512, TASK_PRIO_LOWEST, "i2c");      // Trackball updates
+  Scheduler.startLoop(LowestPriorityloop, 1024, TASK_PRIO_NORMAL, "l1"); // this loop contains LED,RGB and Display updates.
+
   // Scheduler.startLoop(NormalPriorityloop, 1024, TASK_PRIO_NORMAL, "n1"); // this has nothing in it...
 }
 
@@ -451,6 +453,10 @@ void process_keyboard_function(uint16_t keycode)
     {
       updateRGBmode(RGB_MODE_NIGHT);
     }
+
+// #if BLE_PERIPHERAL == 1
+//     sendhelpmodechange(keyboardstate.helpmode);
+// #endif
 
     break;
   case OUT_AUTO:
@@ -1075,6 +1081,7 @@ void sendKeyPresses()
 {
 
   KeyScanner::getReport(); // get state data - Data is in KeyScanner::currentReport
+  keyboardstate.last_pressed_keycode = KeyScanner::last_pressed_keycode;
 
   if (KeyScanner::special_key > 0)
   {
@@ -1483,7 +1490,7 @@ void LowestPriorityloop()
 void TrackballLoop()
 {
 #ifdef BLUEMICRO_CONFIGURED_TRACKBALL
-  // TRACKBALL.update();
+  TRACKBALL.update();
   delay(keyboardconfig.lowestpriorityloopinterval); // wait not too long
 #endif
 }

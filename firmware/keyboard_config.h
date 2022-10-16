@@ -25,8 +25,8 @@ LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR P
 #define KEYBOARD_SIDE LEFT
 // CHANGE THIS FOR THE KEYBOARD TO MATCH WHAT IS BEING FLASHED. OPTIONS: LEFT  RIGHT  SINGLE
 
-#define DEVICE_NAME_R   "Orion's KB"  /**< Name of device. Will be included in the advertising data. */
-#define DEVICE_NAME_L   "Orion's KB"  /**< Name of device. Will be included in the advertising data. */
+#define DEVICE_NAME_R   "KB Right"  /**< Name of device. Will be included in the advertising data. */
+#define DEVICE_NAME_L   "KB Left"  /**< Name of device. Will be included in the advertising data. */
 #define DEVICE_NAME_M   "Orion's KB"    /**< Name of device. Will be included in the advertising data. */
 
 #define DEVICE_MODEL    "Lotus58"   /**< Name of device. Will be included in the advertising data. */
@@ -42,14 +42,15 @@ LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR P
       k24, k25, k26, k27, k28, k29 \
 ) \
 { \
-    { k05, k04, k03, k02, k01, k00 }, \
-    { k11, k10, k09, k08, k07, k06 }, \
-    { k17, k16, k15, k14, k13, k12 }, \
-    { k23, k22, k21, k20, k19, k18 }, \
-    { k29, k28, k27, k26, k25, k24 } \
-}
+    { k00, k01, k02, k03, k04, k05 }, \
+    { k06, k07, k08, k09, k10, k11 }, \
+    { k12, k13, k14, k15, k16, k17 }, \
+    { k18, k19, k20, k21, k22, k23 }, \
+    { k24, k25, k26, k27, k28, k29 } \
+} 
+
 #else
-#define BLUEMICRO_CONFIGURED_TRACKBALL 1
+// #define BLUEMICRO_CONFIGURED_TRACKBALL 1
 #define KEYMAP( \
       k00, k01, k02, k03, k04, k05, \
       k06, k07, k08, k09, k10, k11, \
@@ -58,12 +59,12 @@ LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR P
       k24, k25, k26, k27, k28, k29 \
 ) \
 { \
-    { k00, k01, k02, k03, k04, k05 }, \
-    { k06, k07, k08, k09, k10, k11 }, \
-    { k12, k13, k14, k15, k16, k17 }, \
-    { k18, k19, k20, k21, k22, k23 }, \
-    { k24, k25, k26, k27, k28, k29 } \
-} 
+    { k05, k04, k03, k02, k01, k00 }, \
+    { k11, k10, k09, k08, k07, k06 }, \
+    { k17, k16, k15, k14, k13, k12 }, \
+    { k23, k22, k21, k20, k19, k18 }, \
+    { k29, k28, k27, k26, k25, k24 } \
+}
 
 #endif
 

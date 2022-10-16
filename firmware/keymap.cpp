@@ -39,12 +39,12 @@ void updateDisplay(PersistentState *cfg, DynamicState *stat)
     {
         u8g2.setFontDirection(0);
         u8g2.setFont(u8g2_font_helvB12_tf);
-        battery(13, 19, stat->vbat_per);
+        battery(11, 19, stat->vbat_per);
 
         u8g2.setFontDirection(1);
         u8g2.setFont(u8g2_font_helvB08_tf);
         char batteryStateBuffer[50];
-        sprintf(batteryStateBuffer, "%d%%", stat->vbat_per);
+        sprintf(batteryStateBuffer, "%d%%", (stat->vbat_per - 1));
         u8g2.drawStr(23, 0, batteryStateBuffer);
     }
 
@@ -83,13 +83,15 @@ void updateDisplay(PersistentState *cfg, DynamicState *stat)
     if (stat->helpmode == 1)
     {
         u8g2.setFont(u8g2_font_helvB08_tf);
-        u8g2.drawStr(0, 118, "HELP");
-        u8g2.drawStr(0, 128, "MODE");
-        u8g2.setFont(u8g2_font_twelvedings_t_all);
-        u8g2.drawStr(15, 70, "?");
+        u8g2.drawStr(4, 40, "HELP");
+        u8g2.drawStr(2, 50, "MODE");
+
+        // u8g2.setFont(u8g2_font_twelvedings_t_all);
+        // u8g2.drawStr(15, 70, "?");
         u8g2.setFont(u8g2_font_helvB08_tf);
-        // u8g2.drawStr(15, 80, ); // TODO: print the current key when in helpmode
-        // u8g2.drawStr(15, 90, KeyScanner::currentReport.keycode);
+        u8g2.setFontDirection(1);
+        u8g2.setFont(u8g2_font_helvB08_tf);
+        u8g2.drawStr(20, 60, keynameByKeycode(stat->last_pressed_keycode));
     }
 
     u8g2.setFontDirection(1);
@@ -159,7 +161,7 @@ void setupKeymap()
         KC_TAB, KC_Q, KC_W, KC_E, KC_R, KC_T,
         KC_LSHIFT, KC_A, KC_S, KC_D, KC_F, KC_G,
         KC_LCTRL, KC_Z, KC_X, KC_C, KC_V, KC_B,
-        LAYER_1, _______, KC_LALT, KC_LGUI, KC_BSPACE, KC_MEDIA_PLAY_PAUSE);
+        LAYER_1, HELP_MODE, KC_LALT, KC_LGUI, KC_BSPACE, KC_MEDIA_PLAY_PAUSE);
 
     uint32_t symbol_layer[MATRIX_ROWS][MATRIX_COLS] = KEYMAP(
         _______, KC_F1, KC_F2, KC_F3, KC_F4, KC_F5,
@@ -194,11 +196,13 @@ void encoder_callback(int step)
 {
     if (step < 0)
     {
-        KeyScanner::add_to_encoderKeys(KC_MS_WH_DOWN);
+        // KeyScanner::add_to_encoderKeys(KC_MS_WH_DOWN);
+        KeyScanner::add_to_encoderKeys(KC_AUDIO_VOL_DOWN);
     }
     else
     {
-        KeyScanner::add_to_encoderKeys(KC_MS_WH_UP);
+        KeyScanner::add_to_encoderKeys(KC_AUDIO_VOL_UP);
+        // KeyScanner::add_to_encoderKeys(KC_MS_WH_UP);
     }
 }
 

@@ -37,6 +37,7 @@ LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR P
         uint8_t        modifier;         // 1 byte
         uint8_t        batterylevel;     // 1 byte
         uint16_t       layer;            // 2 byte   
+        bool       helpmode;            // 1 byte
         //uint32_t       command;          // 4 bytes
         //uint32_t       timesync;         // 4 bytes
         
@@ -48,6 +49,7 @@ LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR P
         uint32_t       command;          // 4 bytes
         uint32_t       timesync;         // 4 bytes
         uint16_t       layer;            // 1 byte
+        bool       helpmode;            // 1 byte
     } __attribute__((packed)) StatePayload;
 
     void updateBLEStatus(void);
@@ -70,15 +72,18 @@ LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR P
 
     #if BLE_PERIPHERAL ==1   | BLE_CENTRAL ==1 
     void sendlayer(uint8_t layer);
+    void sendhelpmodechange(bool helpmode);
     #endif
 
     #if BLE_PERIPHERAL == 1
         void cccd_callback(uint16_t conn_hdl,BLECharacteristic* chr, uint16_t cccd_value)  ;
         void layer_request_callback (uint16_t conn_hdl,BLECharacteristic* chr, uint8_t* data, uint16_t len);
+        void helpmode_request_callback (uint16_t conn_hdl,BLECharacteristic* chr, uint8_t* data, uint16_t len);
     #endif
 
     #if BLE_CENTRAL == 1
         void notify_callback(BLEClientCharacteristic* chr, uint8_t* data, uint16_t len);
+        // void receive_helpmode_change_callback(BLEClientCharacteristic* chr, uint8_t* data, uint16_t len);
         void scan_callback(ble_gap_evt_adv_report_t* report);
         void cent_connect_callback(uint16_t conn_handle);
         void cent_disconnect_callback(uint16_t conn_handle, uint8_t reason);

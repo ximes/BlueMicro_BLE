@@ -39,6 +39,8 @@ Payload Linkdata;
 BLEService KBLinkService = BLEService(UUID128_SVC_KEYBOARD_LINK); // Keyboard Link Service - Slave/Server Side
 BLECharacteristic KBLinkChar_Layers = BLECharacteristic(UUID128_CHR_KEYBOARD_LAYERS);
 BLECharacteristic KBLinkChar_Layer_Request = BLECharacteristic(UUID128_CHR_KEYBOARD_LAYER_REQUEST);
+// BLECharacteristic KBLinkChar_Helpmode = BLECharacteristic(UUID128_CHR_KEYBOARD_HELPMODE); // TODO
+// BLECharacteristic KBLinkChar_Helpmode_Request = BLECharacteristic(UUID128_CHR_KEYBOARD_HELPMODE_REQUEST); // TODO
 BLECharacteristic KBLinkChar_Buffer = BLECharacteristic(UUID128_CHR_KEYBOARD_BUFFER);
 #endif
 
@@ -51,6 +53,8 @@ BLEHidAdafruit blehid; // HID Service
 BLEClientService KBLinkClientService = BLEClientService(UUID128_SVC_KEYBOARD_LINK); // Keyboard Link Service Client - Master/Client Side
 BLEClientCharacteristic KBLinkClientChar_Layers = BLEClientCharacteristic(UUID128_CHR_KEYBOARD_LAYERS);
 BLEClientCharacteristic KBLinkClientChar_Layer_Request = BLEClientCharacteristic(UUID128_CHR_KEYBOARD_LAYER_REQUEST);
+// BLEClientCharacteristic KBLinkClientChar_Helpmode = BLEClientCharacteristic(UUID128_CHR_KEYBOARD_HELPMODE); // TODO
+// BLEClientCharacteristic KBLinkClientChar_Helpmode_Request = BLEClientCharacteristic(UUID128_CHR_KEYBOARD_HELPMODE_REQUEST); // TODO
 BLEClientCharacteristic KBLinkClientChar_Buffer = BLEClientCharacteristic(UUID128_CHR_KEYBOARD_BUFFER);
 #endif
 /**************************************************************************************************************************/
@@ -109,6 +113,7 @@ void bluetooth_setup(uint8_t BLEProfile)
 
   statedata.command = 0;
   statedata.layer = 0;
+  statedata.helpmode = false;
   statedata.timesync = 0;
 
 #if BLE_PERIPHERAL == 1 // PERIPHERAL IS THE SLAVE BOARD
@@ -120,6 +125,7 @@ void bluetooth_setup(uint8_t BLEProfile)
   Linkdata.keycode[4] = 0;
   Linkdata.keycode[5] = 0;
   Linkdata.layer = 0;
+  Linkdata.helpmode = false; // TODO: needed?
   Linkdata.modifier = 0;
   // Linkdata.command = 0;
   // Linkdata.timesync = 0;
@@ -144,9 +150,13 @@ void bluetooth_setup(uint8_t BLEProfile)
   KBLinkChar_Layer_Request.setFixedLen(sizeof(statedata));
   KBLinkChar_Layer_Request.setUserDescriptor("Keyboard Layer Request");
   KBLinkChar_Layer_Request.setWriteCallback(layer_request_callback);
+  // KBLinkChar_Layer_Request.setUserDescriptor("Helpmode Request"); // TODO
+  // KBLinkChar_Layer_Request.setWriteCallback(helpmode_request_callback); // TODO
   KBLinkChar_Layer_Request.begin();
   KBLinkChar_Layer_Request.write(&statedata, sizeof(statedata)); // initialize with empty buffer
 
+  // KBLinkChar_Helpmode.begin(); // TODO
+  // KBLinkChar_Helpmode_Request.begin(); // TODO
   KBLinkChar_Buffer.setProperties(CHR_PROPS_NOTIFY + CHR_PROPS_READ);
   KBLinkChar_Buffer.setPermission(SECMODE_OPEN, SECMODE_NO_ACCESS);
   KBLinkChar_Buffer.setMaxLen(sizeof(Linkdata));
@@ -186,6 +196,9 @@ void bluetooth_setup(uint8_t BLEProfile)
   KBLinkClientChar_Buffer.setNotifyCallback(notify_callback);
   KBLinkClientChar_Layer_Request.begin();
 
+  // KBLinkClientChar_Helpmode.begin(); // TODO
+  // KBLinkClientChar_Helpmode.setNotifyCallback(notify_callback); // TODO
+  // KBLinkClientChar_Helpmode_Request.begin(); // TODO
   Bluefruit.Scanner.setRxCallback(scan_callback);
   Bluefruit.Scanner.restartOnDisconnect(true);
   Bluefruit.Scanner.filterRssi(FILTER_RSSI_BELOW_STRENGTH);                      // limits very far away devices - reduces load
@@ -224,6 +237,8 @@ void bluetooth_start(void)
   Bluefruit.Advertising.addUuid(UUID128_SVC_KEYBOARD_LINK);
   Bluefruit.Advertising.addUuid(UUID128_CHR_KEYBOARD_LAYERS);
   Bluefruit.Advertising.addUuid(UUID128_CHR_KEYBOARD_LAYER_REQUEST);
+  // Bluefruit.Advertising.addUuid(UUID128_CHR_KEYBOARD_HELPMODE); // TODO
+  // Bluefruit.Advertising.addUuid(UUID128_CHR_KEYBOARD_HELPMODE_REQUEST); // TODO
   Bluefruit.Advertising.addUuid(UUID128_CHR_KEYBOARD_BUFFER);
   Bluefruit.Advertising.addService(KBLinkService); /// Advertizing Keyboard Link Service
 #endif
@@ -328,6 +343,16 @@ void notify_callback(BLEClientCharacteristic *chr, uint8_t *data, uint16_t len)
       KeyScanner::updateRemoteLayer(data[0]); // Layer is only a single uint8
     }
 
+    // if (chr->uuid == KBLinkClientChar_Helpmode.uuid)
+    // {
+    //   LOG_LV1("CB NOT", "notify_callback: Helpmode Data");
+    //   if (len >= sizeof(remotedata))
+    //   {
+    //     remotedata = *(Payload *)data;
+    //     KeyScanner::updateRemoteHelpmode(remotedata.helpmode);
+    //   }
+    // }
+
     if (chr->uuid == KBLinkClientChar_Buffer.uuid)
     {
       LOG_LV1("CB NOT", "notify_callback: Buffer Data");
@@ -336,6 +361,7 @@ void notify_callback(BLEClientCharacteristic *chr, uint8_t *data, uint16_t len)
         remotedata = *(Payload *)data;
         KeyScanner::updateRemoteReport(remotedata.modifier, remotedata.keycode[0], remotedata.keycode[1], remotedata.keycode[2], remotedata.keycode[3], remotedata.keycode[4], remotedata.keycode[5]);
         KeyScanner::updateRemoteLayer(remotedata.layer);
+        // KeyScanner::updateRemoteHelpmode(true); // TODO
         KeyScanner::remotespecialkeycode = remotedata.specialkeycode;
         if (remotedata.modifier != 0 || remotedata.keycode[0] != 0)
           keyboardstate.lastuseractiontime = millis();
@@ -384,6 +410,28 @@ void cccd_callback(uint16_t conn_hdl, BLECharacteristic *chr, uint16_t cccd_valu
       LOG_LV1("CBCCCD", "KBLinkChar_Layer_Request 'Notify' disabled");
     }
   }
+  // if (chr->uuid == KBLinkChar_Helpmode.uuid)
+  // {
+  //   if (chr->notifyEnabled())
+  //   {
+  //     LOG_LV1("CBCCCD", "Helper 'Notify' enabled");
+  //   }
+  //   else
+  //   {
+  //     LOG_LV1("CBCCCD", "Helper 'Notify' disabled");
+  //   }
+  // }
+  // if (chr->uuid == KBLinkChar_Helpmode_Request.uuid)
+  // {
+  //   if (chr->notifyEnabled())
+  //   {
+  //     LOG_LV1("CBCCCD", "KBLinkChar_Helpmode_Request 'Notify' enabled");
+  //   }
+  //   else
+  //   {
+  //     LOG_LV1("CBCCCD", "KBLinkChar_Helpmode_Request 'Notify' disabled");
+  //   }
+  // }
   if (chr->uuid == KBLinkChar_Buffer.uuid)
   {
     if (chr->notifyEnabled())
@@ -407,6 +455,17 @@ void layer_request_callback(uint16_t conn_hdl, BLECharacteristic *chr, uint8_t *
   {
     statedata = *(StatePayload *)data; // update state
     KeyScanner::updateRemoteLayer(statedata.layer);
+    keyboardstate.lastuseractiontime = millis(); // would this prevent both boards from sleeping because of the ping pong of data between sides?
+  }
+}
+
+void helpmode_request_callback(uint16_t conn_hdl, BLECharacteristic *chr, uint8_t *data, uint16_t len)
+{
+  LOG_LV1("CB_CHR", "helpmode_request_callback: len %i offset %i  data %i", len, data[0]);
+  if (len >= sizeof(statedata))
+  {
+    statedata = *(StatePayload *)data; // update state
+    KeyScanner::updateRemoteHelpmode(statedata.helpmode);
     keyboardstate.lastuseractiontime = millis(); // would this prevent both boards from sleeping because of the ping pong of data between sides?
   }
 }
@@ -511,6 +570,10 @@ void cent_connect_callback(uint16_t conn_handle)
     {
       KBLinkClientChar_Layers.enableNotify();
     }
+    // if (KBLinkClientChar_Helpmode.discover()) // TODO
+    // { // TODO
+    //   KBLinkClientChar_Helpmode.enableNotify(); // TODO
+    // } // TODO
     if (KBLinkClientChar_Buffer.discover())
     {
       KBLinkClientChar_Buffer.enableNotify();
@@ -520,6 +583,10 @@ void cent_connect_callback(uint16_t conn_handle)
     {
       LOG_LV1("CENTRL", "Connected and KBLinkClientChar_Layer_Request.discover() successful");
     }
+    // if (KBLinkClientChar_Helpmode_Request.discover()) // TODO
+    // { // TODO
+    //   LOG_LV1("CENTRL", "Connected and KBLinkClientChar_Helpmode_Request.discover() successful"); // TODO
+    // } // TODO
   }
   else
   {
@@ -539,6 +606,7 @@ void cent_disconnect_callback(uint16_t conn_handle, uint8_t reason)
   LOG_LV1("CENTRL", "Disconnected");
   // if the half disconnects, we need to make sure that the received buffer is set to empty.
   KeyScanner::updateRemoteLayer(0); // Layer is only a single uint8
+  // KeyScanner::updateRemoteHelpmode(false); // TODO
   KeyScanner::updateRemoteReport(0, 0, 0, 0, 0, 0, 0);
   keyboardstate.statusble = keyboardstate.statusble & (~16); // bitwise AND NOT
 }
@@ -598,6 +666,25 @@ void sendlayer(uint8_t layer)
   }
 #endif
 }
+
+/**************************************************************************************************************************/
+void sendhelpmodechange(bool helpmode)
+{
+  // #if BLE_PERIPHERAL == 1
+  //   LOG_LV1("CENTRAL", "Sending Helpmode change %i  %i", millis(), helpmode);
+  //   if (KBLinkChar_Helpmode_Request.discovered())
+  //   {
+  //     statedata.helpmode = helpmode;
+  //     uint16_t msg = KBLinkChar_Helpmode_Request.write_resp(&statedata, sizeof(statedata)); // Central->Peripheral uses the write mechanism
+  //     LOG_LV1("CENTRAL", "Sending Helpmode change %i", msg);
+  //   }
+  //   else
+  //   {
+  //     LOG_LV1("CENTRAL", "Sending Helpmode change failed KBLinkChar_Helpmode_Request.discover() not true ");
+  //   }
+  // #endif
+}
+
 /**************************************************************************************************************************/
 void bluetooth_sendKeys(HIDKeyboard currentReport)
 {
@@ -612,11 +699,9 @@ void bluetooth_sendKeys(HIDKeyboard currentReport)
   keycode[3] = currentReport.keycode[3]; // Buffer
   keycode[4] = currentReport.keycode[4]; // Buffer
   keycode[5] = currentReport.keycode[5]; // Buffer
-  if (!keyboardstate.helpmode)
-  {
-    blehid.keyboardReport(hid_conn_hdl, mods, keycode);
-    LOG_LV2("HID", "Sending blehid.keyboardReport ");
-  }
+
+  blehid.keyboardReport(hid_conn_hdl, mods, keycode);
+  LOG_LV2("HID", "Sending blehid.keyboardReport ");
 #endif
 #if BLE_PERIPHERAL == 1                       // PERIPHERAL IS THE SLAVE BOARD
   Linkdata.modifier = currentReport.modifier; // initialize the slave to master link data...
@@ -627,6 +712,7 @@ void bluetooth_sendKeys(HIDKeyboard currentReport)
   Linkdata.keycode[4] = currentReport.keycode[4];
   Linkdata.keycode[5] = currentReport.keycode[5];
   Linkdata.layer = currentReport.layer;
+  // Linkdata.helpmode = true; // currentReport.helpmode; // TODO
   // Linkdata.command = 0;
   // Linkdata.timesync = 0;
   Linkdata.specialkeycode = 0;
@@ -718,6 +804,7 @@ void bluetooth_sendMouseKey(uint16_t keycode)
   Linkdata.keycode[5] = 0;
   Linkdata.modifier = 0;
   Linkdata.layer = 0;
+  Linkdata.helpmode = false;
   // Linkdata.command = 0;
   // Linkdata.timesync = 0;
   Linkdata.specialkeycode = keycode;

@@ -22,10 +22,12 @@ LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR P
 #define BLUETOOTH_CONFIG_H
 
 // NEW BLE KEYBOARD LINK BLE SERVICE & CHARACTERISTICS  -- randomly generated UUID. DO NOT CHANGE.
-#define UUID128_SVC_KEYBOARD_LINK 0xf9ed59d396fa4752a7dfb16d7b9e0443          // SERVICE TO BE RUN ON SLAVES. "CLIENT" TO RUN ON MASTER
-#define UUID128_CHR_KEYBOARD_LAYERS 0xccccc76aa03d43f993ec2fc6d82a7902        // 1 Byte for Active Layer
-#define UUID128_CHR_KEYBOARD_LAYER_REQUEST 0xae31cd09b0734df5b5bd20baaf18239c // 1 Byte for request from Master to Slaves to change layer
-#define UUID128_CHR_KEYBOARD_BUFFER 0x220f9018372a46da81d3cd196a57d5ab        // 7 Bytes for passing HID MODS and BUFFER from Slave to Master
+#define UUID128_SVC_KEYBOARD_LINK 0xf9ed59d396fa4752a7dfb16d7b9e0443             // SERVICE TO BE RUN ON SLAVES. "CLIENT" TO RUN ON MASTER
+#define UUID128_CHR_KEYBOARD_LAYERS 0xccccc76aa03d43f993ec2fc6d82a7902           // 1 Byte for Active Layer
+#define UUID128_CHR_KEYBOARD_LAYER_REQUEST 0xae31cd09b0734df5b5bd20baaf18239c    // 1 Byte for request from Master to Slaves to change layer
+#define UUID128_CHR_KEYBOARD_HELPMODE 0x93715f104cc311edbdc30242ac120002         // 1 Byte for helpmode
+#define UUID128_CHR_KEYBOARD_HELPMODE_REQUEST 0xa13ca2658cef4903a621df54e3b683a2 // 1 Byte for request from Slave to Master to toggle helpmode
+#define UUID128_CHR_KEYBOARD_BUFFER 0x220f9018372a46da81d3cd196a57d5ab           // 7 Bytes for passing HID MODS and BUFFER from Slave to Master
 #define UUID128_COUNT 4
 
 /***************************************************************************/
@@ -55,8 +57,6 @@ LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR P
 /*       975 uA while max current was 20.62 mA, When bluetooth is off,     */
 /*       average current consumption is only 152 uA indicating that peak   */
 /*       contribution is 43% of the total time                             */
-/*       Enabling PWM device increases the baseline                        */
-/*       current consumption to 723 uA                                     */
 /*   (3) updating the slave_latency to a non-zero value decreased average  */
 /*       current consumption by about 300uA                                */
 /*       Note that this only applies when connected                        */

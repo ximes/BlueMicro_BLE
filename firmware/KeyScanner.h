@@ -50,6 +50,7 @@ class KeyScanner {
         static void release(unsigned long millis, const int& row, const int& col);
         static void updateRemoteReport(uint8_t data0 , uint8_t data1, uint8_t data2,uint8_t data3, uint8_t data4, uint8_t data5,uint8_t data6);
         static void updateRemoteLayer(uint16_t data0);
+        static void updateRemoteHelpmode(bool data0);
         static void process_for_tri_layers(uint8_t if_layer1, uint8_t and_layer2, uint8_t use_layer3);
         static void add_to_encoderKeys(uint16_t keycode);
         static bool getReport();
@@ -62,6 +63,7 @@ class KeyScanner {
         static uint16_t mouse;
         static uint16_t localLayer;
         static uint16_t special_key;
+        static uint16_t last_pressed_keycode;
         static uint16_t remotespecialkeycode;
         //static uint8_t currentReport[8];
         static HIDKeyboard currentReport;
@@ -87,6 +89,7 @@ class KeyScanner {
         static unsigned long lastPressed;
         static uint16_t detectedlayerkeys;
         static uint16_t remoteLayer;
+        static bool helpmode;
         static uint32_t combotimer;
         static uint32_t triggerkeytimer;
         static uint8_t remoteMod;

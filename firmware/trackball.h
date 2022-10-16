@@ -9,15 +9,13 @@
 
 #include "datastructures.h"
 
-// #ifdef BLUEMICRO_CONFIGURED_TRACKBALL
+#ifdef BLUEMICRO_CONFIGURED_TRACKBALL
 #include <bluefruit.h>
 #include <Wire.h>
 #include "bluetooth.h"
 #include <pimoroniTrackball.h> //From https://github.com/ncmreynolds/pimoroniTrackball
-// #endif
+#endif
 
-// void buttonA_Event (uint8_t btnStatus);
-// void buttonB_Event (uint8_t btnStatus);
 extern void addKeycodeToQueue(const uint16_t keycode);
 extern void addKeycodeToQueue(const uint16_t keycode, const uint8_t modifier);
 extern void sendMouseMovement(uint16_t x, uint16_t y);
@@ -28,7 +26,9 @@ public:
 
     void begin(void);
     void update(void);
+
 private:
     PersistentState *config;
     DynamicState *status;
+    void triggerPress(void);
 };
