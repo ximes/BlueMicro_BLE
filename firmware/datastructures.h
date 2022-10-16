@@ -11,12 +11,12 @@ Redistribution and use in source and binary forms, with or without modification,
 
 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR 
-A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT 
-LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT 
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-*/    
+*/
 #ifndef DATASTRUCTURES_H
 #define DATASTRUCTURES_H
 #include <array>
@@ -25,59 +25,56 @@ LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR P
 // this should be incremented every time the PersistentState structure definition is updated.
 // This will ensure that the SETTINGS_FILE file is reset when the structure is updated.
 
-    typedef union {
-        struct { 
-        uint8_t  version;
-        uint8_t    mode;
-        uint8_t    user1;  
-        uint8_t    user2; 
-        
-        uint32_t matrixscaninterval; // timer interval = normal priority
-        uint32_t batteryinterval;  // timer interval = normal priority
-        uint32_t keysendinterval; //   normal priority
-        uint32_t lowpriorityloopinterval;
-        uint32_t lowestpriorityloopinterval;
+typedef union
+{
+  struct
+  {
+    uint8_t version;
+    uint8_t mode;
+    uint8_t user1;
+    uint8_t user2;
 
-        uint8_t    pinBLELED;  
-        uint8_t    pinKBLED; 
-        uint8_t    pinPWMLED;
-        uint8_t    pinRGBLED;
+    uint32_t matrixscaninterval; // timer interval = normal priority
+    uint32_t batteryinterval;    // timer interval = normal priority
+    uint32_t keysendinterval;    //   normal priority
+    uint32_t lowpriorityloopinterval;
+    uint32_t lowestpriorityloopinterval;
 
-        uint8_t    pinVCCSwitch;
-        uint8_t    pinChargerControl;
+    uint8_t pinBLELED;
+    uint8_t pinKBLED;
+    uint8_t pinRGBLED;
 
-        bool    enableBLELED; 
-        bool    enableKBLED; 
-        bool    enablePWMLED;  
-        bool    enableRGBLED;
+    uint8_t pinVCCSwitch;
+    uint8_t pinChargerControl;
 
-        bool    polarityBLELED; 
-        bool    polarityKBLED; 
-        bool    polarityPWMLED;  
-        bool    enableVCCSwitch;  
+    bool enableBLELED;
+    bool enableKBLED;
+    bool enableRGBLED;
 
-        bool    polarityVCCSwitch;  
-        bool    enableChargerControl;  
-        bool    polarityChargerControl;    
-        bool    enableDisplay;
+    bool polarityBLELED;
+    bool polarityKBLED;
+    bool enableVCCSwitch;
 
-        bool    enableSerial;
-        bool    dummy1;
-        bool    dummy2;
+    bool polarityVCCSwitch;
+    bool enableChargerControl;
+    bool polarityChargerControl;
+    bool enableDisplay;
 
-        uint8_t connectionMode;
-        uint8_t BLEProfile;
-        uint16_t BLEProfileEdiv[3];
-        uint8_t BLEProfileAddr[3][6];
-        char BLEProfileName[3][32];
-  
-       };
-       char data[160]; } PersistentState;  // meant for configuration and things that we want to store in flash so that we can pick it up on the next reboot.
+    bool enableSerial;
+    bool dummy1;
+    bool dummy2;
 
+    uint8_t connectionMode;
+    uint8_t BLEProfile;
+    uint16_t BLEProfileEdiv[3];
+    uint8_t BLEProfileAddr[3][6];
+    char BLEProfileName[3][32];
+  };
+  char data[160];
+} PersistentState; // meant for configuration and things that we want to store in flash so that we can pick it up on the next reboot.
 
-
-
-typedef struct {
+typedef struct
+{
   uint32_t timestamp;
   uint32_t lastupdatetime;
   uint32_t lastreporttime;
@@ -94,14 +91,13 @@ typedef struct {
 
   uint32_t batterytimer;
   uint32_t displaytimer;
-  uint32_t audiotimer;
   uint32_t rgbledtimer;
-  uint32_t pwmledtimer;
   uint32_t statusledtimer;
 
   char peer_name_prph[32];
 
   uint16_t conn_handle_prph;
+  uint8_t last_pressed_keycode;
   int8_t rssi_prph;
 
   uint8_t vbat_per;
@@ -148,65 +144,73 @@ typedef struct {
 typedef void (*ledupdateCallback)(PersistentState *config, DynamicState *status);
 typedef void (*updateDisplay_cb_t)(PersistentState *cfg, DynamicState *stat);
 
-enum connectionState { CONNECTION_NONE, CONNECTION_USB, CONNECTION_BT };
+enum connectionState
+{
+  CONNECTION_NONE,
+  CONNECTION_USB,
+  CONNECTION_BT
+};
 
-enum connectionMode { CONNECTION_MODE_AUTO, CONNECTION_MODE_USB_ONLY, CONNECTION_MODE_BLE_ONLY };
+enum connectionMode
+{
+  CONNECTION_MODE_AUTO,
+  CONNECTION_MODE_USB_ONLY,
+  CONNECTION_MODE_BLE_ONLY
+};
 
-enum backgroundTaskID {
+enum backgroundTaskID
+{
   BACKGROUND_TASK_NONE,
-  BACKGROUND_TASK_AUDIO,
   BACKGROUND_TASK_BATTERY,
   BACKGROUND_TASK_DISPLAY,
   BACKGROUND_TASK_STATUSLED,
-  BACKGROUND_TASK_PWMLED,
   BACKGROUND_TASK_RGBLED
 };
 
-struct HIDKeyboard {
-    uint8_t modifier;
-    uint8_t keycode[6];
-    uint16_t layer; 
+struct HIDKeyboard
+{
+  uint8_t modifier;
+  uint8_t keycode[6];
+  uint16_t layer;
+  bool helpmode;
 
-    bool operator!= (const HIDKeyboard &c2)
-    {
-          return !(*this == c2); 
-    }
+  bool operator!=(const HIDKeyboard &c2)
+  {
+    return !(*this == c2);
+  }
 
-    inline bool operator== (const HIDKeyboard &c2)
-    {
-          return  (keycode[0]==c2.keycode[0]) &&
-                  (modifier==c2.modifier    ) &&
-                  (layer==c2.layer          ) &&
-                  (keycode[1]==c2.keycode[1]) &&
-                  (keycode[2]==c2.keycode[2]) &&
-                  (keycode[3]==c2.keycode[3]) &&
-                  (keycode[4]==c2.keycode[4]) &&
-                  (keycode[5]==c2.keycode[5]) ;
-              
-    }
+  inline bool operator==(const HIDKeyboard &c2)
+  {
+    return (keycode[0] == c2.keycode[0]) &&
+           (modifier == c2.modifier) &&
+           (layer == c2.layer) &&
+           (keycode[1] == c2.keycode[1]) &&
+           (keycode[2] == c2.keycode[2]) &&
+           (keycode[3] == c2.keycode[3]) &&
+           (keycode[4] == c2.keycode[4]) &&
+           (keycode[5] == c2.keycode[5]);
+  }
+};
 
-  } ;
+typedef struct
+{
+  uint8_t buttons;
+  int8_t x;
+  int8_t y;
+  int8_t wheel;
+  int8_t pan;
+} HIDMouse;
 
+typedef struct
+{
+  uint16_t usage_code;
+} HIDConsumer;
 
-
-
-
-typedef struct {
-    uint8_t buttons; 
-    int8_t x; 
-    int8_t y;
-    int8_t wheel; 
-    int8_t pan;
-  } HIDMouse;
-
-typedef struct {
-    uint16_t usage_code;
-  } HIDConsumer;
-
-typedef struct {
+typedef struct
+{
   HIDKeyboard keyboard;
   HIDMouse mouse;
   HIDConsumer consumer;
-  } HIDMessages; 
+} HIDMessages;
 
 #endif

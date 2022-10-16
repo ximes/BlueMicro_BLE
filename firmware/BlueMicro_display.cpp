@@ -111,6 +111,7 @@ void battery(uint8_t x, uint8_t y,uint8_t data)
         u8g2.setFont(u8g2_font_battery19_tn);	// choose a suitable font
         sprintf(buffer, "%d", (data+5)/20);
         u8g2.drawStr(x,y,buffer);
+        u8g2.drawStr(x,y+40,"9A");
     #endif
 }
 

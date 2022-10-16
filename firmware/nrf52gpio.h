@@ -54,8 +54,6 @@ void setupCharger(uint8_t chargerpin, bool polarity);
 void switchVCC(bool value);
 void switchCharger(bool value);
 
-void setupPWM(uint8_t pin);
-void sendPWM(uint16_t value);
 void setupWDT(void);
 void updateWDT(void);
 

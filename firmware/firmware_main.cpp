@@ -62,12 +62,10 @@ void setupInternalSettings()
 void resetConfig()
 {
   keyboardconfig.version = BLUEMICRO_CONFIG_VERSION;
-  keyboardconfig.pinPWMLED = BACKLIGHT_LED_PIN;
   keyboardconfig.pinRGBLED = WS2812B_LED_PIN;
   keyboardconfig.pinBLELED = STATUS_BLE_LED_PIN;
   keyboardconfig.pinKBLED = STATUS_KB_LED_PIN;
 
-  keyboardconfig.enablePWMLED = BACKLIGHT_PWM_ON;
   keyboardconfig.enableRGBLED = WS2812B_LED_ON;
   keyboardconfig.enableBLELED = BLE_LED_ACTIVE;
   keyboardconfig.enableKBLED = STATUS_KB_LED_ACTIVE;
@@ -500,79 +498,6 @@ void process_keyboard_function(uint16_t keycode)
     }
     break;
 
-  // BACKLIGHT FUNCTIONS
-  case BL_TOGG:
-    if (keyboardstate.helpmode)
-    {
-      addStringToQueue("BL_TOGG");
-    }
-    stepPWMMode();
-    break;
-  case BL_STEP: // step through modes
-    if (keyboardstate.helpmode)
-    {
-      addStringToQueue("BL_STEP");
-    }
-    stepPWMMode();
-    break;
-  case BL_ON:
-    if (keyboardstate.helpmode)
-    {
-      addStringToQueue("BL_ON");
-    }
-    setPWMMode(3);
-    PWMSetMaxVal();
-    break;
-  case BL_OFF:
-    if (keyboardstate.helpmode)
-    {
-      addStringToQueue("BL_OFF");
-    }
-    setPWMMode(0);
-    break;
-  case BL_INC:
-    if (keyboardstate.helpmode)
-    {
-      addStringToQueue("BL_INC");
-    }
-    incPWMMaxVal();
-    break;
-  case BL_DEC:
-    if (keyboardstate.helpmode)
-    {
-      addStringToQueue("BL_DEC");
-    }
-    decPWMMaxVal();
-    break;
-  case BL_BRTG:
-    if (keyboardstate.helpmode)
-    {
-      addStringToQueue("BL_BRTG");
-    }
-    setPWMMode(2);
-    break;
-  case BL_REACT:
-    if (keyboardstate.helpmode)
-    {
-      addStringToQueue("BL_REACT");
-    }
-    setPWMMode(1);
-    PWMSetMaxVal();
-    break;
-  case BL_STEPINC:
-    if (keyboardstate.helpmode)
-    {
-      addStringToQueue("BL_STEPINC");
-    }
-    incPWMStepSize();
-    break;
-  case BL_STEPDEC:
-    if (keyboardstate.helpmode)
-    {
-      addStringToQueue("BL_STEPDEC");
-    }
-    decPWMStepSize();
-    break;
   case RGB_TOG:
     if (keyboardstate.helpmode)
     {
@@ -1390,7 +1315,6 @@ void loop()
         bluetooth_stop();
         keyboardstate.connectionState = CONNECTION_USB;
         keyboardstate.lastuseractiontime = millis(); // a USB connection will reset sleep timer...
-        // speaker.playTone(TONE_BLE_CONNECT);
       }
     }
     else if (bluetooth_isConnected())
@@ -1399,7 +1323,6 @@ void loop()
       {
         keyboardstate.connectionState = CONNECTION_BT;
         keyboardstate.lastuseractiontime = millis(); // a BLE connection will reset sleep timer...
-        // speaker.playTone(TONE_BLE_CONNECT);
       }
     }
     else
@@ -1408,7 +1331,6 @@ void loop()
       {
         bluetooth_start();
         keyboardstate.connectionState = CONNECTION_NONE;
-        // speaker.playTone(TONE_BLE_DISCONNECT);
         //  disconnecting won't reset sleep timer.
       }
     }
@@ -1508,10 +1430,6 @@ void LowestPriorityloop()
     toprocess = BACKGROUND_TASK_DISPLAY;
   }
 
-  if ((keyboardstate.timestamp - keyboardstate.audiotimer) > 500)
-  { // TODO: check if there is new audio to play!
-    toprocess = BACKGROUND_TASK_AUDIO;
-  }
   if (keyboardconfig.enableRGBLED)
   {
     if ((keyboardstate.timestamp - keyboardstate.rgbledtimer) > 50)
@@ -1520,25 +1438,14 @@ void LowestPriorityloop()
     }
   }
 
-  if (keyboardconfig.enablePWMLED)
-  {
-    if ((keyboardstate.timestamp - keyboardstate.pwmledtimer) > 50)
-    {
-      toprocess = BACKGROUND_TASK_PWMLED;
-    }
-  }
-
   if ((keyboardstate.timestamp - keyboardstate.statusledtimer) > 100)
-  { // TODO: check if there is new audio to play!
+  {
     toprocess = BACKGROUND_TASK_STATUSLED;
   }
 
   switch (toprocess)
   {
   case BACKGROUND_TASK_NONE:
-    break;
-  case BACKGROUND_TASK_AUDIO:
-    keyboardstate.audiotimer = keyboardstate.timestamp;
     break;
   case BACKGROUND_TASK_BATTERY:
     batterymonitor.updateBattery();
@@ -1564,10 +1471,6 @@ void LowestPriorityloop()
   case BACKGROUND_TASK_STATUSLED:
     keyboardstate.statusledtimer = keyboardstate.timestamp;
     statusLEDs.update();
-    break;
-  case BACKGROUND_TASK_PWMLED:
-    keyboardstate.pwmledtimer = keyboardstate.timestamp;
-    updatePWM(timesincelastkeypress);
     break;
   case BACKGROUND_TASK_RGBLED:
     keyboardstate.rgbledtimer = keyboardstate.timestamp;

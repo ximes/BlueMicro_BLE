@@ -54,7 +54,6 @@ void prepareSleep()
 #endif
 
   statusLEDs.sleep();
-  sendPWM(0); // forces PWM backlight off
 }
 
 void sleepNow()

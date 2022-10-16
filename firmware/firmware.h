@@ -28,7 +28,6 @@ LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR P
 #include "sleep.h"
 #include "bluetooth.h"
 #include "nrf52battery.h"
-#include "LedPwm.h"
 #include "LedRGB.h"
 #include "Wire.h"
 #include "nrf52gpio.h"
@@ -37,7 +36,6 @@ LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR P
 #include "usb.h"
 #include "BlueMicro_display.h"
 #include "trackball.h"
-#include "BlueMicro_tone.h"
 #include "combo_engine.h"
 
 void setupInternalSettings(void);
@@ -49,7 +47,7 @@ void setupTrackball(void);
 void scanMatrix(void);
 void setupLeds(void);
 void sendKeyPresses(void);
-void sendMouseMovement(const uint16_t x, const uint16_t  y);
+void sendMouseMovement(const uint16_t x, const uint16_t y);
 void setupSchedulers(void);
 void TrackballLoop(void);
 void LowestPriorityloop(void);

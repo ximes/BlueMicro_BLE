@@ -24,6 +24,8 @@ Chapter 10: Keyboard/Keypad Page(0x07) - Page 53
 https://www.usb.org/sites/default/files/documents/hut1_12v2.pdf
  */
 
+#include "datastructures.h"
+
 #ifndef HID_KEYCODES_H
 #define HID_KEYCODES_H
 
@@ -636,3 +638,4 @@ enum hid_keyboard_keypad_usage {
 
 #endif /* HID_KEYCODES_H */
 
+char* keynameByKeycode(uint16_t keycode);
