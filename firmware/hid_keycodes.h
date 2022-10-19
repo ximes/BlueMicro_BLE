@@ -461,7 +461,7 @@ enum hid_keyboard_keypad_usage {
 #define BLEPROFILE_2        KB(KC_F9)
 #define BLEPROFILE_3        KB(KC_F10)
 #define SLEEP_NOW           KB(KC_F11)
-#define HELP_MODE           KB(KC_F12)
+#define HELP_MODE   KB(KC_F12)
 
 #define BATTERY_CALC_DEFAULT  KB(KC_F13)
 #define BATTERY_CALC_TEST     KB(KC_F14)

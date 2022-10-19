@@ -1256,6 +1256,7 @@ void keyscantimer_callback(TimerHandle_t _handle)
   // since timers are repeated non stop, we dont want the duration of code running within the timer to vary and potentially
   // go longer than the interval time.
   scanMatrix();
+  TRACKBALL.update();
   sendKeyPresses();
 
   keyboardstate.lastuseractiontime = max(KeyScanner::getLastPressed(), keyboardstate.lastuseractiontime); // use the latest time to check for sleep...
@@ -1497,8 +1498,8 @@ void LowestPriorityloop()
 void TrackballLoop()
 {
 #ifdef BLUEMICRO_CONFIGURED_TRACKBALL
-  TRACKBALL.update();
-  delay(keyboardconfig.lowestpriorityloopinterval); // wait not too long
+  // TRACKBALL.update();
+  // delay(keyboardconfig.lowestpriorityloopinterval); // wait not too long
 #endif
 }
 //********************************************************************************************//

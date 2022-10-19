@@ -697,9 +697,9 @@ void send_helpmode_change(bool helpmode, uint16_t keycode)
 /**************************************************************************************************************************/
 void bluetooth_sendKeys(HIDKeyboard currentReport)
 {
+#if BLE_HID == 1
   if (!keyboardstate.helpmode)
   {
-#if BLE_HID == 1
     uint8_t keycode[6];
     uint8_t mods = 0;
     mods = currentReport.modifier;         // modifiers
@@ -712,27 +712,27 @@ void bluetooth_sendKeys(HIDKeyboard currentReport)
 
     blehid.keyboardReport(hid_conn_hdl, mods, keycode);
     LOG_LV2("HID", "Sending blehid.keyboardReport ");
+  }
 #endif
-#if BLE_PERIPHERAL == 1                         // PERIPHERAL IS THE SLAVE BOARD
-    Linkdata.modifier = currentReport.modifier; // initialize the slave to master link data...
-    Linkdata.keycode[0] = currentReport.keycode[0];
-    Linkdata.keycode[1] = currentReport.keycode[1];
-    Linkdata.keycode[2] = currentReport.keycode[2];
-    Linkdata.keycode[3] = currentReport.keycode[3];
-    Linkdata.keycode[4] = currentReport.keycode[4];
-    Linkdata.keycode[5] = currentReport.keycode[5];
-    Linkdata.layer = currentReport.layer;
-    // Linkdata.command = 0;
-    // Linkdata.timesync = 0;
-    Linkdata.specialkeycode = 0;
-    Linkdata.batterylevel = batterymonitor.vbat_per;
-    LOG_LV1("KB-P2C", " KBLinkChar_Buffer.notify sendKeys sending %i [1] %i", sizeof(Linkdata), Linkdata.keycode[0]);
-    KBLinkChar_Buffer.notify(&Linkdata, sizeof(Linkdata));
+#if BLE_PERIPHERAL == 1                       // PERIPHERAL IS THE SLAVE BOARD
+  Linkdata.modifier = currentReport.modifier; // initialize the slave to master link data...
+  Linkdata.keycode[0] = currentReport.keycode[0];
+  Linkdata.keycode[1] = currentReport.keycode[1];
+  Linkdata.keycode[2] = currentReport.keycode[2];
+  Linkdata.keycode[3] = currentReport.keycode[3];
+  Linkdata.keycode[4] = currentReport.keycode[4];
+  Linkdata.keycode[5] = currentReport.keycode[5];
+  Linkdata.layer = currentReport.layer;
+  // Linkdata.command = 0;
+  // Linkdata.timesync = 0;
+  Linkdata.specialkeycode = 0;
+  Linkdata.batterylevel = batterymonitor.vbat_per;
+  LOG_LV1("KB-P2C", " KBLinkChar_Buffer.notify sendKeys sending %i [1] %i", sizeof(Linkdata), Linkdata.keycode[0]);
+  KBLinkChar_Buffer.notify(&Linkdata, sizeof(Linkdata));
 #endif
 #if BLE_CENTRAL == 1 // CENTRAL IS THE MASTER BOARD
-    ;                // Don't send keys to slaves
+  ;                  // Don't send keys to slaves
 #endif
-  }
 }
 
 /**************************************************************************************************************************/

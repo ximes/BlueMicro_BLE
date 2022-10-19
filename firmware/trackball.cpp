@@ -1,127 +1,73 @@
-// /* Trackball_BlueMicro.ino
-//     Sketch that is an adaptation of the pimoroni trackball's Leonardo trackball example
-//     and nRF52 hid_mouse example.
+/* Trackball_BlueMicro.ino
+    Sketch that is an adaptation of the pimoroni trackball's Leonardo trackball example
+    and nRF52 hid_mouse example.
 
-//     Written by William
-//     Created: 9/26/2022
-//     Last Modified: 9/29/2022
-// */
+    Written by William
+    Created: 9/26/2022
+    Last Modified: 9/29/2022
+*/
 
-// #include "trackball.h"
+#include "trackball.h"
 
-// // #ifdef BLUEMICRO_CONFIGURED_TRACKBALL
-// // BLEHidAdafruit blehid;
-// // byte multiHit = 2; // May change to allow for various multi-hits
+#ifdef BLUEMICRO_CONFIGURED_TRACKBALL
+// Define trackball variables
+uint8_t mouseSpeed = 15; // Change this to alter the mouse speed
+int16_t x = 0;
+int16_t y = 0;
 
-// // Define trackball variables
-// uint8_t mouseSpeed = 15; // Change this to alter the mouse speed
-// int16_t x = 0;
-// int16_t y = 0;
+Trackball::Trackball(PersistentState *cfg, DynamicState *stat)
+{ // Constructor
+    config = cfg;
+    status = stat;
+}
 
-// // DailyStruggleButton buttonA;
-// // DailyStruggleButton buttonB;
+void Trackball::begin(void)
+{
 
-// // #endif
+    // Initialize I2C and trackball
+    Wire.begin();
+    trackball.begin();
 
-// // Button A event handling
-// // void buttonA_Event (uint8_t btnStatus) {
-// //   // We can use switch/case to run through what happens for each event
-// //   switch (btnStatus){
+    while (!trackball.isConnected())
+        ;
+}
 
-// //     case onPress:
-// //       blehid.mouseButtonPress(MOUSE_BUTTON_RIGHT);
-// //       break;
+/**************************************************************************************************************************/
+void Trackball::update(void)
+{
+    if (trackball.changed())
+    {
+        if (trackball.down() > 0)
+        {
+            triggerPress(KC_MS_WH_DOWN);
+        }
+        if (trackball.up() > 0)
+        {
+            triggerPress(KC_MS_WH_UP);
+        }
+        if (trackball.click())
+        {
+            trackball.setRed(70);
+            addKeycodeToQueue(KC_MS_BTN1);
+            delay(50);
+            addKeycodeToQueue(KC_MS_OFF);
+            trackball.setRed(0);
+            trackball.setBlue(0);
+        }
+        if (trackball.release())
+        {
+            triggerPress(KC_MS_OFF);
+            trackball.setBlue(0);
+            trackball.setRed(0);
+        }
+    }
+}
 
-// //     case onRelease:
-// //       blehid.mouseButtonRelease();
-// //       break;
-
-// //     case onLongPress:
-
-// //       break;
-
-// //     case onMultiHit:
-
-// //       break;
-// //   }
-// // }
-
-// // // Button B event handling
-// // void buttonB_Event (uint8_t btnStatus)
-// // {
-// //   // We can use switch/case to run through what happens for each event
-// //   switch (btnStatus){
-
-// //     case onPress:
-// //       blehid.mouseButtonPress(MOUSE_BUTTON_MIDDLE);
-// //       break;
-
-// //     case onRelease:
-// //       blehid.mouseButtonRelease();
-// //       break;
-
-// //     case onLongPress:
-
-// //       break;
-
-// //     case onMultiHit:
-
-// //       break;
-// //   }
-// // }
-
-// Trackball::Trackball(PersistentState *cfg, DynamicState *stat)
-// { // Constructor
-//   config = cfg;
-//   status = stat;
-// }
-
-// void Trackball::begin(void)
-// {
-// #ifdef BLUEMICRO_CONFIGURED_TRACKBALL
-//   // Initialize I2C and trackball
-//   Wire.begin();
-//   trackball.begin();
-
-//   while (!trackball.isConnected())
-//     ;
-// #endif
-// }
-
-// /**************************************************************************************************************************/
-// void Trackball::update(void)
-// {
-// #ifdef BLUEMICRO_CONFIGURED_TRACKBALL
-//   if (trackball.changed())
-//   {
-//     trackball.setBlue(70);
-//     if (trackball.left() > 2)
-//     {
-
-//       triggerPress(KC_RIGHT);
-//     }
-//     if (trackball.right() > 2)
-//     {
-//       triggerPress(KC_LEFT);
-//     }
-//     if (trackball.down() > 2)
-//     {
-//       triggerPress(KC_UP);
-//     }
-//     if (trackball.up() > 2)
-//     {
-//       triggerPress(KC_DOWN);
-//     }
-//   }
-
-// private:
-//   void Trackball::triggerPress(const uint16_t keycode)
-//   {
-//     trackball.setBlue(70);
-//     addKeycodeToQueue(keycode);
-//     delay(10);
-//     trackball.setBlue(0);
-//   }
-
-// #endif
-// }
+void Trackball::triggerPress(uint16_t keycode)
+{
+    trackball.setBlue(70);
+    addKeycodeToQueue(keycode);
+    delay(200);
+    trackball.setBlue(0);
+}
+#endif
