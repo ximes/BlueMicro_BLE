@@ -143,39 +143,67 @@ void setupKeymap()
     startup();
 
     /* Qwerty LEFT
-     * ,-------------------------------------------------.
-     * | Esc  |   1  |   2  |   3  |   4    |     5      |
-     * |------+------+------+------+--------+------------|
-     * | Tab  |   Q  |   W  |   E  |   R    |     T      |
-     * |------+------+------+------+--------+------------|
-     * | Shift|   A  |   S  |   D  |   F    |     G      |
-     * |------+------+------+------+--------+------------|
-     * | Ctrl |   Z  |   X  |   C  |   V    |     B      |
-     * |------+------+------+------+--------+------------+
-     * |      |      | Alt  | GUI  |  Space  | UP   | Play/Pause |
-     * `-------------------------------------------------'
+     * +-----------------------------------------------+
+     * |  Esc  |  1  |  2  |    3    |   4   |    5    |
+     * |-------+-----+-----+---------+-------+---------|
+     * |  Tab  |  Q  |  W  |    E    |   R   |    T    |
+     * |-------+-----+-----+---------+-------+---------|
+     * | Shift |  A  |  S  |    D    |   F   |    G    |
+     * |-------+-----+-----+---------+-------+---------|------------+
+     * | Ctrl  |  Z  |  X  |    C    |   V   |    B    | Play/Pause |
+     * +-------+-----+-----+---------+-------+---------+------------+------------+
+     *                     | LAYER 3 |  Alt  |   GUI   |    Enter   |  LAYER 2   |
+     *                     +-----------------------------------------------------+
      */
 
     uint32_t qwerty_layer[MATRIX_ROWS][MATRIX_COLS] = KEYMAP(
         KC_ESC, KC_1, KC_2, KC_3, KC_4, KC_5,
         KC_TAB, KC_Q, KC_W, KC_E, KC_R, KC_T,
         KC_LSHIFT, KC_A, KC_S, KC_D, KC_F, KC_G,
-        KC_LCTRL, KC_Z, KC_X, KC_C, KC_V, KC_B,
-        LAYER_1, HELP_MODE, KC_LALT, KC_LGUI, KC_BSPACE, KC_MEDIA_PLAY_PAUSE);
+        KC_LCTRL, KC_Z, KC_X, KC_C, KC_V, KC_B, KC_MEDIA_PLAY_PAUSE,
+        LAYER_2, KC_LALT, KC_LGUI, KC_ENT, LAYER_1);
+
+    /* Symbols LEFT
+     * +-----------------------------------------+
+     * |  F1  |  F2  |  F3  |  F4  |  F5  |  F6  |
+     * |------+------+------+------+------+------|
+     * |      |      |  7   |  8   |  9   |      |
+     * |------+------+------+------+------+------|
+     * |      |  `   |  4   |  5   |  6   |      |
+     * |------+------+------+------+------+------|-------+
+     * |      |      |  1   |  2   |  3   |  0   |       |
+     * +------+------+------+------+------+------+-------+-----+
+     *                      |      |      |      |       |     |
+     *                      +----------------------------------+
+     */
 
     uint32_t symbol_layer[MATRIX_ROWS][MATRIX_COLS] = KEYMAP(
-        _______, KC_F1, KC_F2, KC_F3, KC_F4, KC_F5,
-        KC_GRV, KC_1, KC_2, KC_3, KC_4, KC_5,
-        _______, KC_EXLM, KC_AT, KC_HASH, KC_DLR, KC_PERC,
-        _______, KC_EQL, KC_MINS, KC_PLUS, KC_LCBR, KC_RCBR,
-        _______, _______, _______, _______, _______, _______);
+        KC_F1, KC_F2, KC_F3, KC_F4, KC_F5, KC_F6,
+        KC_UNDEFINED, KC_UNDEFINED, KC_KP_7, KC_KP_8, KC_KP_9, KC_UNDEFINED,
+        KC_UNDEFINED, KC_UNDEFINED, KC_KP_4, KC_KP_5, KC_KP_6, KC_UNDEFINED,
+        KC_UNDEFINED, KC_UNDEFINED, KC_KP_1, KC_KP_2, KC_KP_3, KC_0, KC_UNDEFINED,
+        _______, _______, _______, _______, _______);
+
+    /* Control LEFT
+     * +-------------------------------------------------------+
+     * |  System Sleep |     |  ?  |  ?  |  ?  |   KB reset    |
+     * |---------------+-----+-----+-----+-----+---------------+
+     * |   Display +   |  ?  |  ?  |  ?  |  ?  |  Flash reset  |
+     * |---------------+-----+-----+-----+-----+---------------+
+     * |   Display -   |     |  ?  |  ?  |  ?  |      ?        |
+     * |---------------+-----+-----+-----+-----+---------------+-----+
+     * |      ?        |  ?  |  ?  |  ?  |  ?  |      ?        |  ?  |
+     * +---------------+-----+-----+-----+-----+---------------+-----+-----+
+     *                       |  ?  |  ?  |  ?  |      ?        |  ?  |     |
+     *                       +---------------------------------------------+
+     */
 
     uint32_t control_layer[MATRIX_ROWS][MATRIX_COLS] = KEYMAP(
-        _______, _______, _______, _______, _______, _______,
-        _______, _______, _______, _______, _______, _______,
-        _______, _______, _______, _______, _______, _______,
-        _______, _______, _______, _______, _______, _______,
-        _______, _______, _______, _______, _______, _______);
+        KC_SYSTEM_SLEEP, KC_UNDEFINED, KC_UNDEFINED, KC_UNDEFINED, KC_UNDEFINED, RESET,
+        KC_UNDEFINED, KC_UNDEFINED, KC_UNDEFINED, KC_UNDEFINED, KC_UNDEFINED, EEP_RST,
+        KC_DISPLAY_BRIGHTI, KC_UNDEFINED, KC_UNDEFINED, KC_UNDEFINED, KC_UNDEFINED, KC_UNDEFINED,
+        KC_DISPLAY_BRIGHTD, KC_UNDEFINED, KC_UNDEFINED, KC_UNDEFINED, KC_UNDEFINED, KC_UNDEFINED,
+        KC_UNDEFINED, KC_UNDEFINED, KC_UNDEFINED, KC_UNDEFINED, KC_UNDEFINED, KC_UNDEFINED);
 
     // for (int row = 0; row < MATRIX_ROWS; ++row) {
     //     for (int col = 0; col < MATRIX_COLS; ++col) {
@@ -194,15 +222,13 @@ void setupKeymap()
 #if KEYBOARD_SIDE == RIGHT
 void encoder_callback(int step)
 {
-    if (step < 0)
+    if (step > 0)
     {
-        // KeyScanner::add_to_encoderKeys(KC_MS_WH_DOWN);
-        KeyScanner::add_to_encoderKeys(KC_AUDIO_VOL_DOWN);
+        KeyScanner::add_to_encoderKeys(KC_MEDIA_NEXT_TRACK);
     }
     else
     {
-        KeyScanner::add_to_encoderKeys(KC_AUDIO_VOL_UP);
-        // KeyScanner::add_to_encoderKeys(KC_MS_WH_UP);
+        KeyScanner::add_to_encoderKeys(KC_MEDIA_PREV_TRACK);
     }
 }
 
@@ -211,39 +237,67 @@ void setupKeymap()
     startup();
 
     /* Qwerty RIGHT
-     * ,-------------------------------------------------.
-     * |   6  |   7   |   8  |   9  |   0  | KC_MINUS    |
-     * |------+-------+------+------+------+-------------|
-     * |   Y  |   U   |   I  |   O  |   P  | Bksp        |
-     * |------+-------+------+------+------+-------------|
-     * |   H  |   J   |   K  |   L  |   ;  |  '          |
-     * |------+-------+------+------+------+-------------|
-     * |   N  |   M   |   ,  |   .  |   /  | Shift       |
-     * `------+-------+------+------+------+-------------|
-     * | Help | Space | DOWN | Bksp | Del  | Enter       |
-     * `-------------------------------------------------'
+     *                           +---------------------------------------+
+     *                           |  6   |  7  |  8   |  9  |  0  |   -   |
+     *                           |------+-----+------+-----+-----+-------|
+     *                           |  Y   |  U  |  I   |  O  |  P  |  tbd  |
+     *                           |------+-----+------+-----+-----+-------|
+     *                           |  H   |  J  |  K   |  L  |  ;  |   '   |
+     *                   +-------+------+-----+------+-----+-----+-------|
+     *                   |  tbd  |  N   |  M  |  ,   |  .  |  /  | SHIFT |
+     * +-----------+-----+-------+------+-----+------+-----+-----+-------+
+     * | Help mode | n/a | Space | Bksp | Del | Mode |
+     * +---------------------------------------------+
      */
 
     uint32_t qwerty_layer[MATRIX_ROWS][MATRIX_COLS] = KEYMAP(
-        KC_6, KC_7, KC_8, KC_9, KC_0, LAYER_1,
-        KC_Y, KC_U, KC_I, KC_O, KC_P, KC_LBRACKET,
+        KC_6, KC_7, KC_8, KC_9, KC_0, KC_MINUS,
+        KC_Y, KC_U, KC_I, KC_O, KC_P, KC_UNDEFINED,
         KC_H, KC_J, KC_K, KC_L, KC_SCOLON, KC_QUOTE,
-        KC_N, KC_M, KC_COMMA, KC_DOT, KC_SLSH, KC_RSHIFT,
-        HELP_MODE, KC_SPC, KC_ENT, _______, KC_DEL, HELP_MODE);
+        KC_AUDIO_MUTE, KC_N, KC_M, KC_COMMA, KC_DOT, KC_SLSH, KC_RSHIFT,
+        HELP_MODE, KC_SPC, KC_BSPC, KC_DEL, LAYER_1);
+
+    /* Symbols RIGHT
+     *                     +-----------------------------------------+
+     *                     |  F7  |  F8  |  F9  | F10  | F11  | F12  |
+     *                     |------+------+------+------+------+------|
+     *                     | Home |  Ins |  PG↑ |  =   |  (   |  )   |
+     *                     |------+------+------+------+------+------|
+     *                     | End  |  ↑   |  PG↓ |  +   |  [   |  ]   |
+     *               +-----+------+------+------+------+------+------|
+     *               |     |  ←   |  ↓   |  →   |      |  {   |  }   |
+     * +-----+-------+-----+------+------+------+------+------+------+
+     * |     |  n/a  |     | Sc ↑ | Sc ↓ |      |
+     * +----------------------------------------+
+     */
 
     uint32_t symbol_layer[MATRIX_ROWS][MATRIX_COLS] = KEYMAP(
-        DEBUG, _______, KC_MS_UP, _______, _______, KC_MS_WH_UP,
-        _______, KC_MS_LEFT, KC_MS_DOWN, KC_MS_RIGHT, _______, KC_MS_WH_DOWN,
-        KC_PGUP, _______, KC_UP, _______, _______, _______,
-        KC_PGDN, KC_LEFT, KC_DOWN, KC_RGHT, KC_DEL, _______,
-        _______, _______, _______, _______, _______, _______);
+        KC_F7, KC_F8, KC_F9, KC_F10, KC_F11, KC_F12,
+        KC_HOME, KC_INS, KC_PGUP, KC_EQL, KC_LPRN, KC_RPRN,
+        KC_END, KC_UP, KC_PGDN, KC_PLUS, KC_LBRC, KC_RBRC,
+        KC_UNDEFINED, KC_LEFT, KC_DOWN, KC_RIGHT, KC_UNDEFINED, KC_LCBR, KC_RCBR,
+        KC_UNDEFINED, KC_UNDEFINED, KC_MS_WH_UP, KC_MS_WH_DOWN, KC_UNDEFINED);
+
+    /* Control RIGHT
+     *                     +-------------------------------------------------------+
+     *                     |   RESET   |  ?  |  ?  |  ?  |     |  KC_SYSTEM_SLEEP  |
+     *                     |-----------+-----+-----+-----+-----+-------------------+
+     *                     |  EEP_RST  |  ?  |  ?  |  ?  |     |     RGB_TOG       |
+     *                     |-----------+-----+-----+-----+-----+-------------------+
+     *                     |     ?     |  ?  |  ?  |  ?  |  ?  |     RGB_INC       |
+     *               +-----+-----------+-----+-----+-----+-----+-------------------|
+     *               |  ?  |     ?     |  ?  |  ?  |  ?  |  ?  |     RGB_DEC       |
+     * +-----+-------+-----+-----------+-----+-----+-----+-----+-------------------+
+     * |  ?  |  n/a  |  ?  |     ?     |  ?  |  ?  |
+     * +-------------------------------------------+
+     */
 
     uint32_t control_layer[MATRIX_ROWS][MATRIX_COLS] = KEYMAP(
-        _______, _______, _______, _______, _______, KC_SPC,
-        KC_PGUP, _______, KC_UP, _______, _______, KC_BSPC,
-        KC_PGDN, KC_LEFT, KC_DOWN, KC_RGHT, KC_DEL, KC_BSPC,
-        _______, _______, _______, _______, _______, _______,
-        _______, _______, _______, _______, LAYER_0, _______);
+        RESET, KC_UNDEFINED, KC_UNDEFINED, KC_UNDEFINED, KC_UNDEFINED, KC_SYSTEM_SLEEP,
+        EEP_RST, KC_UNDEFINED, KC_UNDEFINED, KC_UNDEFINED, KC_UNDEFINED, KC_UNDEFINED,
+        KC_UNDEFINED, KC_UNDEFINED, KC_UNDEFINED, KC_UNDEFINED, KC_UNDEFINED, KC_UNDEFINED,
+        KC_UNDEFINED, KC_UNDEFINED, KC_UNDEFINED, KC_UNDEFINED, KC_UNDEFINED, KC_UNDEFINED, KC_UNDEFINED,
+        KC_UNDEFINED, _______, _______, _______, _______);
 
     ADDLAYER(_QWERTY, Method::PRESS, qwerty_layer);
     ADDLAYER(_SYMBOLS, Method::PRESS, symbol_layer);

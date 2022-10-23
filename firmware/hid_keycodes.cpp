@@ -32,8 +32,8 @@ char *keynameByKeycode(uint16_t keycode)
     switch (keycode)
     {
     case KC_NO:
-        return "-";
-        break; //
+        return "n/a";
+        break;
     case KC_ROLL_OVER:
         return "-";
         break;
@@ -172,11 +172,23 @@ char *keynameByKeycode(uint16_t keycode)
     case KC_EQUAL:
         return "= key";
         break;
-    case KC_LBRACKET:
-        return "[{";
+    case KC_LPRN:
+        return "( key";
         break;
-    case KC_RBRACKET:
-        return "}]";
+    case KC_RPRN:
+        return ") key";
+        break;
+    case KC_LBRC:
+        return "[ key";
+        break;
+    case KC_RBRC:
+        return "] key";
+        break;
+    case KC_LCBR:
+        return "{ key";
+        break;
+    case KC_RCBR:
+        return "} key";
         break;
     case KC_BSLASH:
         return "-";
@@ -297,49 +309,49 @@ char *keynameByKeycode(uint16_t keycode)
         return "-";
         break;
     case KC_KP_SLASH:
-        return "-";
+        return "Numpad /";
         break;
     case KC_KP_ASTERISK:
-        return "-";
+        return "Numpad *";
         break;
     case KC_KP_MINUS:
-        return "-";
+        return "Numpad +";
         break;
     case KC_KP_PLUS:
-        return "-";
+        return "Numpad +";
         break;
     case KC_KP_ENTER:
-        return "-";
+        return "Numpad Enter";
         break;
     case KC_KP_1:
-        return "-";
+        return "Numpad 1";
         break;
     case KC_KP_2:
-        return "-";
+        return "Numpad 2";
         break;
     case KC_KP_3:
-        return "-";
+        return "Numpad 3";
         break;
     case KC_KP_4:
-        return "-";
+        return "Numpad 4";
         break;
     case KC_KP_5:
-        return "-";
+        return "Numpad 5";
         break;
     case KC_KP_6:
-        return "-";
+        return "Numpad 6";
         break;
     case KC_KP_7:
-        return "-";
+        return "Numpad 7";
         break;
     case KC_KP_8:
-        return "-";
+        return "Numpad 8";
         break;
     case KC_KP_9:
-        return "-";
+        return "Numpad 9";
         break;
     case KC_KP_0:
-        return "-";
+        return "Numpad 0";
         break;
     case KC_KP_DOT:
         return "-";
@@ -627,201 +639,207 @@ char *keynameByKeycode(uint16_t keycode)
     case LAYER_F:
         return "Toggle Layer F";
         break;
-        // case OUT_AUTO:
-        //     return "-";
-        //     break; //
-        // case OUT_USB:
-        //     return "-";
-        //     break; //
-        // case OUT_BT:
-        //     return "-";
-        //     break; //
-        // case RGB_TOG:
-        //     return "-";
-        //     break; //
-        // case RGB_MODE_FORWARD:
-        //     return "-";
-        //     break; //
-        // case RGB_MOD:
-        //     return "-";
-        //     break; //
-        // case RGB_MODE_REVERSE:
-        //     return "-";
-        //     break; //
-        // case RGB_RMOD:
-        //     return "-";
-        //     break; //
-        // case RGB_HUI:
-        //     return "-";
-        //     break; //
-        // case RGB_HUD:
-        //     return "-";
-        //     break; //
-        // case RGB_SAI:
-        //     return "-";
-        //     break; //
-        // case RGB_SAD:
-        //     return "-";
-        //     break; //
-        // case RGB_VAI:
-        //     return "-";
-        //     break; //
-        // case RGB_VAD:
-        //     return "-";
-        //     break; //
-        // case RGB_MODE_PLAIN:
-        //     return "-";
-        //     break; //
-        // case RGB_M_P:
-        //     return "-";
-        //     break; //
-        // case RGB_MODE_NIGHT:
-        //     return "-";
-        //     break; //
-        // case RGB_M_N:
-        //     return "-";
-        //     break; //
-        // case RGB_MODE_HELP:
-        //     return "-";
-        //     break; //
-        // case RGB_M_H:
-        //     return "-";
-        //     break; //
-        // case RGB_MODE_BREATHE:
-        //     return "-";
-        //     break; //
-        // case RGB_M_B:
-        //     return "-";
-        //     break; //
-        // case RGB_MODE_RAINBOW:
-        //     return "-";
-        //     break; //
-        // case RGB_M_R:
-        //     return "-";
-        //     break; //
-        // case RGB_MODE_SWIRL:
-        //     return "-";
-        //     break; //
-        // case RGB_M_SW:
-        //     return "-";
-        //     break; //
-        // case RGB_MODE_SNAKE:
-        //     return "-";
-        //     break; //
-        // case RGB_M_SN:
-        //     return "-";
-        //     break; //
-        // case RGB_MODE_KNIGHT:
-        //     return "-";
-        //     break; //
-        // case RGB_M_K:
-        //     return "-";
-        //     break; //
-        // case RGB_MODE_XMAS:
-        //     return "-";
-        //     break; //
-        // case RGB_M_X:
-        //     return "-";
-        //     break; //
-        // case RGB_MODE_GRADIENT:
-        //     return "-";
-        //     break; //
-        // case RGB_M_G:
-        //     return "-";
-        //     break; //
-        // case RGB_MODE_RGBTEST:
-        //     return "-";
-        //     break; //
-        // case RGB_M_T:
-        //     return "-";
-        //     break; //
-        // case RGB_SPI:
-        //     return "-";
-        //     break; //
-        // case RGB_SPD:
-        //     return "-";
-        //     break; //
-        // case PRINT_BATTERY:
-        //     return "-";
-        //     break; //
-        // case PRINT_INFO:
-        //     return "-";
-        //     break; //
-        // case PRINT_BLE:
-        //     return "-";
-        //     break; //
-        // case PRINT_HELP:
-        //     return "-";
-        //     break; //
-        // case BLEPROFILE_1:
-        //     return "-";
-        //     break; //
-        // case BLEPROFILE_2:
-        //     return "-";
-        //     break; //
-        // case BLEPROFILE_3:
-        //     return "-";
-        //     break; //
-        // case SLEEP_NOW:
-        //     return "-";
-        //     break; //
-        // case HELP_MODE:
-        //     return "Help mode";
-        //     break; //
-        // case BATTERY_CALC_DEFAULT:
-        //     return "-";
-        //     break; //
-        // case BATTERY_CALC_TEST:
-        //     return "-";
-        //     break; //
-        // case BATTERY_CALC_FILTERED:
-        //     return "-";
-        //     break; //
-        // case KC_SYSTEM_POWER:
-        //     return "-";
-        //     break; //
-        // case KC_SYSTEM_RESET:
-        //     return "-";
-        //     break; //
-        // case KC_SYSTEM_SLEEP:
-        //     return "-";
-        //     break; //
-        // case KC_DISPLAY_BRIGHTI:
-        //     return "-";
-        //     break; //
-        // case KC_DISPLAY_BRIGHTD:
-        //     return "-";
-        //     break; //
-        // case KC_RADIO_CONTROL:
-        //     return "-";
-        //     break; //
-        // case KC_RADIO_BUTTONS:
-        //     return "-";
-        //     break; //
-        // case KC_RADIO_LED:
-        //     return "-";
-        //     break; //
-        // case KC_RADIO_SWITCH:
-        //     return "-";
-        //     break; //
-        // case KC_MEDIA_PLAY_PAUSE:
-        //     return "Play/Pause";
-        //     break;
-        // case KC_MEDIA_NEXT_TRACK:
-        //     return "-";
-        //     break; //
-        // case KC_MEDIA_PREV_TRACK:
-        //     return "-";
-        //     break; //
-        // case KC_MEDIA_STOP:
-        //     return "-";
-        //     break; //
-        // case KC_AUDIO_VOL:
-        //     return "-";
-        //     break; //
-        // case KC_AUDIO_MUTE:
-        //     return "-";
-        //     break; //
+    // case OUT_AUTO:
+    //     return "-";
+    //     break; //
+    // case OUT_USB:
+    //     return "-";
+    //     break; //
+    // case OUT_BT:
+    //     return "-";
+    //     break; //
+    // case RGB_TOG:
+    //     return "-";
+    //     break; //
+    // case RGB_MODE_FORWARD:
+    //     return "-";
+    //     break; //
+    // case RGB_MOD:
+    //     return "-";
+    //     break; //
+    // case RGB_MODE_REVERSE:
+    //     return "-";
+    //     break; //
+    // case RGB_RMOD:
+    //     return "-";
+    //     break; //
+    // case RGB_HUI:
+    //     return "-";
+    //     break; //
+    // case RGB_HUD:
+    //     return "-";
+    //     break; //
+    // case RGB_SAI:
+    //     return "-";
+    //     break; //
+    // case RGB_SAD:
+    //     return "-";
+    //     break; //
+    // case RGB_VAI:
+    //     return "-";
+    //     break; //
+    // case RGB_VAD:
+    //     return "-";
+    //     break; //
+    // case RGB_MODE_PLAIN:
+    //     return "-";
+    //     break; //
+    // case RGB_M_P:
+    //     return "-";
+    //     break; //
+    // case RGB_MODE_NIGHT:
+    //     return "-";
+    //     break; //
+    // case RGB_M_N:
+    //     return "-";
+    //     break; //
+    // case RGB_MODE_HELP:
+    //     return "-";
+    //     break; //
+    // case RGB_M_H:
+    //     return "-";
+    //     break; //
+    // case RGB_MODE_BREATHE:
+    //     return "-";
+    //     break; //
+    // case RGB_M_B:
+    //     return "-";
+    //     break; //
+    // case RGB_MODE_RAINBOW:
+    //     return "-";
+    //     break; //
+    // case RGB_M_R:
+    //     return "-";
+    //     break; //
+    // case RGB_MODE_SWIRL:
+    //     return "-";
+    //     break; //
+    // case RGB_M_SW:
+    //     return "-";
+    //     break; //
+    // case RGB_MODE_SNAKE:
+    //     return "-";
+    //     break; //
+    // case RGB_M_SN:
+    //     return "-";
+    //     break; //
+    // case RGB_MODE_KNIGHT:
+    //     return "-";
+    //     break; //
+    // case RGB_M_K:
+    //     return "-";
+    //     break; //
+    // case RGB_MODE_XMAS:
+    //     return "-";
+    //     break; //
+    // case RGB_M_X:
+    //     return "-";
+    //     break; //
+    // case RGB_MODE_GRADIENT:
+    //     return "-";
+    //     break; //
+    // case RGB_M_G:
+    //     return "-";
+    //     break; //
+    // case RGB_MODE_RGBTEST:
+    //     return "-";
+    //     break; //
+    // case RGB_M_T:
+    //     return "-";
+    //     break; //
+    // case RGB_SPI:
+    //     return "-";
+    //     break; //
+    // case RGB_SPD:
+    //     return "-";
+    //     break; //
+    // case PRINT_BATTERY:
+    //     return "-";
+    //     break; //
+    // case PRINT_INFO:
+    //     return "-";
+    //     break; //
+    // case PRINT_BLE:
+    //     return "-";
+    //     break; //
+    // case PRINT_HELP:
+    //     return "-";
+    //     break; //
+    // case BLEPROFILE_1:
+    //     return "-";
+    //     break; //
+    // case BLEPROFILE_2:
+    //     return "-";
+    //     break; //
+    // case BLEPROFILE_3:
+    //     return "-";
+    //     break; //
+    // case SLEEP_NOW:
+    //     return "-";
+    //     break; //
+    // case HELP_MODE:
+    //     return "Help mode";
+    //     break; //
+    // case BATTERY_CALC_DEFAULT:
+    //     return "-";
+    //     break; //
+    // case BATTERY_CALC_TEST:
+    //     return "-";
+    //     break; //
+    // case BATTERY_CALC_FILTERED:
+    //     return "-";
+    //     break; //
+    // case KC_SYSTEM_POWER:
+    //     return "-";
+    //     break; //
+    // case KC_SYSTEM_RESET:
+    //     return "-";
+    //     break; //
+    case KC_SYSTEM_SLEEP:
+        return "OS Sleep";
+        break;
+    case RESET:
+        return "Reset KB";
+        break;
+    case EEP_RST:
+        return "Re-flash KB";
+        break;
+    case KC_DISPLAY_BRIGHTI:
+        return "Display Light";
+        break;
+    case KC_DISPLAY_BRIGHTD:
+        return "Display Dim";
+        break;
+    // case KC_RADIO_CONTROL:
+    //     return "-";
+    //     break; //
+    // case KC_RADIO_BUTTONS:
+    //     return "-";
+    //     break; //
+    // case KC_RADIO_LED:
+    //     return "-";
+    //     break; //
+    // case KC_RADIO_SWITCH:
+    //     return "-";
+    //     break; //
+    case KC_MEDIA_PLAY_PAUSE:
+        return "Play/Pause";
+        break;
+    // case KC_MEDIA_NEXT_TRACK:
+    //     return "-";
+    //     break; //
+    // case KC_MEDIA_PREV_TRACK:
+    //     return "-";
+    //     break; //
+    // case KC_MEDIA_STOP:
+    //     return "-";
+    //     break; //
+    // case KC_AUDIO_VOL:
+    //     return "-";
+    //     break; //
+    case KC_AUDIO_MUTE:
+        return "Audio mute";
+        break;
         // case KC_AUDIO_BASS:
         //     return "-";
         //     break; //
@@ -1164,7 +1182,7 @@ char *keynameByKeycode(uint16_t keycode)
         // case SYM_DEGREE:
         //     return "-";
         //     break;
-        }
-
-        return ".";
     }
+
+    return ".";
+}

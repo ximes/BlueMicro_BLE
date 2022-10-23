@@ -38,22 +38,22 @@ LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR P
     k00, k01, k02, k03, k04, k05,           \
     k06, k07, k08, k09, k10, k11,           \
     k12, k13, k14, k15, k16, k17,           \
-    k18, k19, k20, k21, k22, k23,           \
-    k24, k25, k26, k27, k28, k29)           \
+    k18, k19, k20, k21, k22, k23, k24,      \
+    k25, k26, k27, k28, k29)                \
     {                                       \
         {k00, k01, k02, k03, k04, k05},     \
             {k06, k07, k08, k09, k10, k11}, \
             {k12, k13, k14, k15, k16, k17}, \
             {k18, k19, k20, k21, k22, k23}, \
         {                                   \
-            k24, k25, k26, k27, k28, k29    \
+            k29, k25, k26, k27, k28, k24    \
         }                                   \
     }
 
 #else
 
 #ifndef BLUEMICRO_CONFIGURED_TRACKBALL
-    #define BLUEMICRO_CONFIGURED_TRACKBALL 1
+#define BLUEMICRO_CONFIGURED_TRACKBALL 1
 #endif
 
 #define KEYMAP(                             \
@@ -66,9 +66,9 @@ LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR P
         {k05, k04, k03, k02, k01, k00},     \
             {k11, k10, k09, k08, k07, k06}, \
             {k17, k16, k15, k14, k13, k12}, \
-            {k23, k22, k21, k20, k19, k18}, \
+            {k24, k23, k22, k21, k20, k19}, \
         {                                   \
-            k29, k28, k27, k26, k25, k24    \
+            k25, k29, k28, k27, k26, k18    \
         }                                   \
     }
 
