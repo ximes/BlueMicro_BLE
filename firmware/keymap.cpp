@@ -169,7 +169,7 @@ void setupKeymap()
      * |------+------+------+------+------+------|
      * |      |      |  7   |  8   |  9   |      |
      * |------+------+------+------+------+------|
-     * |      |  `   |  4   |  5   |  6   |      |
+     * |      |      |  4   |  5   |  6   |      |
      * |------+------+------+------+------+------|-------+
      * |      |      |  1   |  2   |  3   |  0   |       |
      * +------+------+------+------+------+------+-------+-----+
@@ -205,15 +205,13 @@ void setupKeymap()
         KC_DISPLAY_BRIGHTD, KC_UNDEFINED, KC_UNDEFINED, KC_UNDEFINED, KC_UNDEFINED, KC_UNDEFINED,
         KC_UNDEFINED, KC_UNDEFINED, KC_UNDEFINED, KC_UNDEFINED, KC_UNDEFINED, KC_UNDEFINED);
 
-    // for (int row = 0; row < MATRIX_ROWS; ++row) {
-    //     for (int col = 0; col < MATRIX_COLS; ++col) {
-    //         matrix[row][col].addActivation(_QWERTY, Method::PRESS, qwerty_layer[row][col]);
-    //     }
-    // }
-
+    // Default activations
     ADDLAYER(_QWERTY, Method::PRESS, qwerty_layer);
     ADDLAYER(_SYMBOLS, Method::PRESS, symbol_layer);
     ADDLAYER(_CONTROL, Method::PRESS, control_layer);
+
+    // Custom key activations
+    // none
 
     setupEncoder();
 }
@@ -237,15 +235,15 @@ void setupKeymap()
     startup();
 
     /* Qwerty RIGHT
-     *                           +---------------------------------------+
-     *                           |  6   |  7  |  8   |  9  |  0  |   -   |
-     *                           |------+-----+------+-----+-----+-------|
-     *                           |  Y   |  U  |  I   |  O  |  P  |  tbd  |
-     *                           |------+-----+------+-----+-----+-------|
-     *                           |  H   |  J  |  K   |  L  |  ;  |   '   |
-     *                   +-------+------+-----+------+-----+-----+-------|
-     *                   |  tbd  |  N   |  M  |  ,   |  .  |  /  | SHIFT |
-     * +-----------+-----+-------+------+-----+------+-----+-----+-------+
+     *                           +-------------------------------------+
+     *                           |  6   |  7  |  8   |  9  |  0  |  -  |
+     *                           |------+-----+------+-----+-----+-----|
+     *                           |  Y   |  U  |  I   |  O  |  P  | tbd |
+     *                           |------+-----+------+-----+-----+-----|
+     *                           |  H   |  J  |  K   |  L  |  ;  |  '  |
+     *                   +-------+------+-----+------+-----+-----+-----|
+     *                   | mute  |  `   |  N  |  M   |  ,  |  .  |  /  |
+     * +-----------+-----+-------+------+-----+------+-----+-----+-----+
      * | Help mode | n/a | Space | Bksp | Del | Mode |
      * +---------------------------------------------+
      */
@@ -254,18 +252,18 @@ void setupKeymap()
         KC_6, KC_7, KC_8, KC_9, KC_0, KC_MINUS,
         KC_Y, KC_U, KC_I, KC_O, KC_P, KC_UNDEFINED,
         KC_H, KC_J, KC_K, KC_L, KC_SCOLON, KC_QUOTE,
-        KC_AUDIO_MUTE, KC_N, KC_M, KC_COMMA, KC_DOT, KC_SLSH, KC_RSHIFT,
-        HELP_MODE, KC_SPC, KC_BSPC, KC_DEL, LAYER_1);
+        KC_AUDIO_MUTE, KC_GRAVE, KC_N, KC_M, KC_COMMA, KC_DOT, KC_SLSH,
+        HELP_MODE, KC_SPC, KC_BSPC, KC_DEL, OS(LAYER_2));
 
     /* Symbols RIGHT
      *                     +-----------------------------------------+
      *                     |  F7  |  F8  |  F9  | F10  | F11  | F12  |
      *                     |------+------+------+------+------+------|
-     *                     | Home |  Ins |  PG↑ |  =   |  (   |  )   |
+     *                     | Home |  PG↑ | Ins  |  =   |  (   |  )   |
      *                     |------+------+------+------+------+------|
-     *                     | End  |  ↑   |  PG↓ |  +   |  [   |  ]   |
+     *                     | End  |  PG↓ |  ↑   |  +   |  [   |  ]   |
      *               +-----+------+------+------+------+------+------|
-     *               |     |  ←   |  ↓   |  →   |      |  {   |  }   |
+     *               |     |      |   ←  |  ↓   |  →   |  {   |  }   |
      * +-----+-------+-----+------+------+------+------+------+------+
      * |     |  n/a  |     | Sc ↑ | Sc ↓ |      |
      * +----------------------------------------+
@@ -273,9 +271,9 @@ void setupKeymap()
 
     uint32_t symbol_layer[MATRIX_ROWS][MATRIX_COLS] = KEYMAP(
         KC_F7, KC_F8, KC_F9, KC_F10, KC_F11, KC_F12,
-        KC_HOME, KC_INS, KC_PGUP, KC_EQL, KC_LPRN, KC_RPRN,
-        KC_END, KC_UP, KC_PGDN, KC_PLUS, KC_LBRC, KC_RBRC,
-        KC_UNDEFINED, KC_LEFT, KC_DOWN, KC_RIGHT, KC_UNDEFINED, KC_LCBR, KC_RCBR,
+        KC_HOME, KC_PGUP, KC_INS, KC_EQL, KC_LPRN, KC_RPRN,
+        KC_END, KC_PGDN, KC_UP, KC_PLUS, KC_LBRC, KC_RBRC,
+        KC_UNDEFINED, KC_UNDEFINED, KC_LEFT, KC_DOWN, KC_RIGHT, KC_LCBR, KC_RCBR,
         KC_UNDEFINED, KC_UNDEFINED, KC_MS_WH_UP, KC_MS_WH_DOWN, KC_UNDEFINED);
 
     /* Control RIGHT
@@ -299,9 +297,13 @@ void setupKeymap()
         KC_UNDEFINED, KC_UNDEFINED, KC_UNDEFINED, KC_UNDEFINED, KC_UNDEFINED, KC_UNDEFINED, KC_UNDEFINED,
         KC_UNDEFINED, _______, _______, _______, _______);
 
+    // Default activations
     ADDLAYER(_QWERTY, Method::PRESS, qwerty_layer);
     ADDLAYER(_SYMBOLS, Method::PRESS, symbol_layer);
     ADDLAYER(_CONTROL, Method::PRESS, control_layer);
+
+    // Custom key activations
+    // none
 
     setupEncoder();
 }

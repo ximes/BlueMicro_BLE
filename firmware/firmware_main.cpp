@@ -567,7 +567,7 @@ void process_keyboard_function(uint16_t keycode)
     break;
   case RGB_MODE_PLAIN:
     if (keyboardstate.helpmode)
-    {
+{
       addStringToQueue("RGB_MODE_PLAIN");
     }
     updateRGBmode(RGB_MODE_PLAIN);
@@ -1256,7 +1256,6 @@ void keyscantimer_callback(TimerHandle_t _handle)
   // since timers are repeated non stop, we dont want the duration of code running within the timer to vary and potentially
   // go longer than the interval time.
   scanMatrix();
-  TRACKBALL.update();
   sendKeyPresses();
 
   keyboardstate.lastuseractiontime = max(KeyScanner::getLastPressed(), keyboardstate.lastuseractiontime); // use the latest time to check for sleep...
@@ -1498,7 +1497,7 @@ void LowestPriorityloop()
 void TrackballLoop()
 {
 #ifdef BLUEMICRO_CONFIGURED_TRACKBALL
-  // TRACKBALL.update();
+  TRACKBALL.update();
   // delay(keyboardconfig.lowestpriorityloopinterval); // wait not too long
 #endif
 }
