@@ -150,7 +150,7 @@ void setupKeymap()
      * |-------+-----+-----+---------+-------+---------|
      * | Shift |  A  |  S  |    D    |   F   |    G    |
      * |-------+-----+-----+---------+-------+---------|------------+
-     * | Ctrl  |  Z  |  X  |    C    |   V   |    B    | Play/Pause |
+     * | Ctrl  |  Z  |  X  |    C    |   V   |    `    | Play/Pause |
      * +-------+-----+-----+---------+-------+---------+------------+------------+
      *                     | LAYER 3 |  Alt  |   GUI   |    Enter   |  LAYER 2   |
      *                     +-----------------------------------------------------+
@@ -160,7 +160,7 @@ void setupKeymap()
         KC_ESC, KC_1, KC_2, KC_3, KC_4, KC_5,
         KC_TAB, KC_Q, KC_W, KC_E, KC_R, KC_T,
         KC_LSHIFT, KC_A, KC_S, KC_D, KC_F, KC_G,
-        KC_LCTRL, KC_Z, KC_X, KC_C, KC_V, KC_B, KC_MEDIA_PLAY_PAUSE,
+        KC_LCTRL, KC_Z, KC_X, KC_C, KC_V, KC_GRAVE, KC_MEDIA_PLAY_PAUSE,
         LAYER_2, KC_LALT, KC_LGUI, KC_ENT, LAYER_1);
 
     /* Symbols LEFT
@@ -242,7 +242,7 @@ void setupKeymap()
      *                           |------+-----+------+-----+-----+-----|
      *                           |  H   |  J  |  K   |  L  |  ;  |  '  |
      *                   +-------+------+-----+------+-----+-----+-----|
-     *                   | mute  |  `   |  N  |  M   |  ,  |  .  |  /  |
+     *                   | mute  |  B   |  N  |  M   |  ,  |  .  |  /  |
      * +-----------+-----+-------+------+-----+------+-----+-----+-----+
      * | Help mode | n/a | Space | Bksp | Del | Mode |
      * +---------------------------------------------+
@@ -252,7 +252,7 @@ void setupKeymap()
         KC_6, KC_7, KC_8, KC_9, KC_0, KC_MINUS,
         KC_Y, KC_U, KC_I, KC_O, KC_P, KC_UNDEFINED,
         KC_H, KC_J, KC_K, KC_L, KC_SCOLON, KC_QUOTE,
-        KC_AUDIO_MUTE, KC_GRAVE, KC_N, KC_M, KC_COMMA, KC_DOT, KC_SLSH,
+        KC_AUDIO_MUTE, KC_B, KC_N, KC_M, KC_COMMA, KC_DOT, KC_SLSH,
         HELP_MODE, KC_SPC, KC_BSPC, KC_DEL, OS(LAYER_2));
 
     /* Symbols RIGHT
